@@ -8,19 +8,21 @@ import {
   resultOverview,
   votingNotice,
 } from '../domain/election'
-import type { Candidate, StateResult } from '../domain/election'
+import type { Candidate, StateResult, Office } from '../domain/election'
 export function StateDetailsPanel({
   result,
   candidates,
   round,
   mock,
   onClose,
+  office = 'president',
 }: {
   result: StateResult
   candidates: Candidate[]
   round: 1 | 2
   mock: boolean
   onClose: () => void
+  office?: Office
 }) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const state = stateByUf[result.uf]
@@ -52,6 +54,7 @@ export function StateDetailsPanel({
             ? `${leader.name} · mais votos computados`
             : 'Empate entre os primeiros'}
       </p>
+      {office === 'governor' && <p className="state-outcome">{result.outcome === 'elected' ? 'Eleito no 1º turno · TSE' : result.outcome === 'runoff' ? 'Segundo turno definido · TSE' : result.outcome === 'unassigned' ? 'Sem atribuição de eleito · TSE' : 'Em apuração · resultado ainda não definido'}</p>}
       <div className="panel-counted">
         <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>
         <span>das seções {result.sectionMetric === 'totalized' ? 'totalizadas' : 'apuradas'}</span>
@@ -65,7 +68,8 @@ export function StateDetailsPanel({
             <li key={candidate.id}>
               <span className="dot" style={{ background: candidate.color }} />
               <div>
-                <span>{candidate.name}</span>
+                <span>{candidate.name}{candidate.party ? ` · ${candidate.party}` : ''}</span>
+                {candidate.status && <small>{candidate.status}</small>}
                 <small>{formatNumber(candidate.votes)} votos</small>
                 {candidate.destination && candidate.destination !== 'Válido' && (
                   <small className="vote-destination">{candidate.destination}</small>
@@ -84,7 +88,8 @@ export function StateDetailsPanel({
               <li key={candidate.id}>
                 <span className="dot" style={{ background: candidate.color }} />
                 <div>
-                  <span>{candidate.name}</span>
+                  <span>{candidate.name}{candidate.party ? ` · ${candidate.party}` : ''}</span>
+                  {candidate.status && <small>{candidate.status}</small>}
                   <small>{formatNumber(candidate.votes)} votos</small>
                   {candidate.destination && candidate.destination !== 'Válido' && (
                     <small className="vote-destination">{candidate.destination}</small>
@@ -105,7 +110,7 @@ export function StateDetailsPanel({
         </div>
       )}
       <p className="panel-footnote">
-        Presidente da República · {round}º turno
+        {office === 'president' ? 'Presidente da República' : 'Governador'} · {round}º turno
         {mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}
       </p>
     </aside>

@@ -1,6 +1,6 @@
 import { states } from '../src/data/states.ts'
 import type { ElectionSnapshot } from '../src/domain/election.ts'
-import { normalizeTse, resultUrl, SIMULATION } from './tse-adapter.ts'
+import { normalizeTse, resultUrl, SIMULATION, isGovernor } from './tse-adapter.ts'
 import type { TseConfig } from './tse-adapter.ts'
 
 export class UpstreamError extends Error {
@@ -23,7 +23,7 @@ export function createTseSource({
   let lastError: unknown
   let rawCache = new Map<string, { raw: unknown; etag: string | null; modified: string | null }>()
   async function download() {
-    const scopes = ['br', ...states.map((state) => state.uf.toLowerCase())]
+    const scopes = [...(isGovernor(config) ? [] : ['br']), ...states.map((state) => state.uf.toLowerCase())]
     const rawFiles = new Map<string, unknown>()
     const downloaded = new Map<
       string,

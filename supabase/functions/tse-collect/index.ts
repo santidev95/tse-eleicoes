@@ -1,5 +1,5 @@
 import { createTseSource, UpstreamError } from '../../../server/tse-source.ts'
-import { OFFICIAL, SIMULATION } from '../../../server/tse-adapter.ts'
+import { OFFICIAL, SIMULATION, GOVERNORS } from '../../../server/tse-adapter.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
@@ -26,12 +26,14 @@ const sources = {
   oficial: createTseSource({ config: OFFICIAL, ttl: 0 }),
   simulado2026: createTseSource({ config: SIMULATION, ttl: 0 }),
 }
+const governorSource = createTseSource({ config: GOVERNORS, ttl: 0 })
 
 Deno.serve(async (request: Request) => {
   if (request.method !== 'POST')
     return Response.json({ error: 'Method not allowed' }, { status: 405 })
   let environment: keyof typeof sources = 'oficial'
   let lease: string | null = null
+  let office: 'president' | 'governor' = 'president'
   try {
     // Custom authentication: the opaque token lives in Vault; only its hash is in our table.
     // The publishable/anon key cannot authorize collection or writes.
@@ -42,9 +44,12 @@ Deno.serve(async (request: Request) => {
     if (body.environment !== 'oficial' && body.environment !== 'simulado2026')
       return Response.json({ error: 'Invalid environment' }, { status: 400 })
     environment = body.environment
-    lease = await rpc('tse_claim_collection', { p_environment: environment })
+    if (body.office !== undefined && body.office !== 'president' && body.office !== 'governor') return Response.json({error:'Invalid office'}, {status:400})
+    office = body.office ?? 'president'
+    if (office === 'governor' && environment !== 'oficial') return Response.json({error:'Unsupported simulation'}, {status:400})
+    lease = await rpc('tse_claim_collection', { p_environment: environment, p_office: office })
     if (!lease) return Response.json({ status: 'skipped', reason: 'locked-or-cooling-down' })
-    const source = sources[environment]
+    const source = office === 'governor' ? governorSource : sources[environment]
     const snapshot = await source.load()
     const files = await Promise.all(
       source.getRawFiles().map(async (file) => {
@@ -64,6 +69,7 @@ Deno.serve(async (request: Request) => {
     const hash = await sha256(JSON.stringify(files.map((file) => [file.scope, file.sha256])))
     const id = await rpc('tse_store_collection', {
       p_environment: environment,
+      p_office: office,
       p_lease: lease,
       p_files: files,
       p_snapshot: snapshot,
@@ -75,6 +81,7 @@ Deno.serve(async (request: Request) => {
     if (lease) {
       await rpc('tse_fail_collection', {
         p_environment: environment,
+        p_office: office,
         p_lease: lease,
         p_error: message,
         p_retry_seconds:

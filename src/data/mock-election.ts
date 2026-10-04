@@ -1,6 +1,6 @@
 import { states } from './states'
 import { snapshotSchema } from '../domain/election'
-import type { ElectionSnapshot } from '../domain/election'
+import type { ElectionSnapshot, Office } from '../domain/election'
 
 // Fictional candidates and results. The same source drives the map, panels and national totals.
 const samples: Record<string, [number, number, number]> = {
@@ -32,7 +32,16 @@ const samples: Record<string, [number, number, number]> = {
   SE: [60, 88.6, 1_100_000],
   TO: [51, 79.8, 780_000],
 }
-export function createMockSnapshot(): ElectionSnapshot {
+export function createMockSnapshot(office: Office = 'president'): ElectionSnapshot {
+  if (office === 'governor') {
+    const base = createMockSnapshot()
+    const parties = ['PSD', 'UNIÃO', 'PT', 'MDB', 'PL', 'REPUBLICANOS', 'PP', 'PSB']
+    const colors = ['#3b82f6', '#06b6d4', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#6366f1', '#ec4899']
+    return snapshotSchema.parse({ ...base, office,
+      candidates: base.states.flatMap((state,i) => base.candidates.map((c,j) => ({ ...c, id: `${state.uf}:${c.id}`, uf: state.uf, name:`Candidato ${state.uf} ${c.id.toUpperCase()}`, party:parties[(i+j)%parties.length], color:colors[(i+j)%colors.length] }))),
+      states: base.states.map((s,i) => ({ ...s, outcome:i < 8 ? 'elected' : i < 22 ? 'runoff' : 'counting', votes:s.votes.map(v => ({...v,candidateId:`${s.uf}:${v.candidateId}`})) })),
+      national: { ...base.national, votes:[] } })
+  }
   const candidates = [
     { id: 'a', name: 'Candidato A', number: '13', color: '#e11d48' },
     { id: 'b', name: 'Candidato B', number: '22', color: '#2563eb' },

@@ -44,7 +44,7 @@ export function StateTooltip({
             <div key={candidate.id}>
               <span title={candidate.name}>
                 <i className="dot" style={{ background: candidate.color }} />
-                {candidateLabel(candidate)}
+                {candidateLabel(candidate)}{candidate.party ? ` · ${candidate.party}` : ''}
               </span>
               <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
             </div>

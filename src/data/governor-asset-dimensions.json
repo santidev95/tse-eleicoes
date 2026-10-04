@@ -1,0 +1,130 @@
+{
+  "RR": {
+    "width": 95.3506,
+    "height": 80.6726
+  },
+  "AM": {
+    "width": 232.223,
+    "height": 188.77
+  },
+  "pointer": {
+    "width": 10.8281,
+    "height": 13.125
+  },
+  "AP": {
+    "width": 80.8608,
+    "height": 80.6805
+  },
+  "AC": {
+    "width": 95.236,
+    "height": 80.8598
+  },
+  "RO": {
+    "width": 116.766,
+    "height": 87.9098
+  },
+  "PA": {
+    "width": 196.004,
+    "height": 159.895
+  },
+  "TO": {
+    "width": 88.0048,
+    "height": 116.93
+  },
+  "MA": {
+    "width": 80.6893,
+    "height": 102.39
+  },
+  "PI": {
+    "width": 59.1955,
+    "height": 116.839
+  },
+  "CE": {
+    "width": 73.5204,
+    "height": 66.3202
+  },
+  "RN": {
+    "width": 59.1779,
+    "height": 44.7235
+  },
+  "PB": {
+    "width": 73.7966,
+    "height": 37.5007
+  },
+  "PE": {
+    "width": 110.118,
+    "height": 44.7165
+  },
+  "SE": {
+    "width": 45.0174,
+    "height": 33.2384
+  },
+  "AL": {
+    "width": 52.2717,
+    "height": 30.3395
+  },
+  "MT": {
+    "width": 159.943,
+    "height": 152.725
+  },
+  "BA": {
+    "width": 174.447,
+    "height": 152.818
+  },
+  "DF": {
+    "width": 23.328,
+    "height": 23.328
+  },
+  "MS": {
+    "width": 109.616,
+    "height": 124.054
+  },
+  "GO": {
+    "width": 95.1373,
+    "height": 109.558
+  },
+  "MG": {
+    "width": 145.519,
+    "height": 131.082
+  },
+  "ES": {
+    "width": 44.7323,
+    "height": 59.1655
+  },
+  "RJ": {
+    "width": 81.2024,
+    "height": 41.952
+  },
+  "SP": {
+    "width": 160.117,
+    "height": 87.9016
+  },
+  "SC": {
+    "width": 95.4933,
+    "height": 44.6831
+  },
+  "PR": {
+    "width": 138.74,
+    "height": 66.3037
+  },
+  "RS": {
+    "width": 131.627,
+    "height": 87.944
+  },
+  "president": {
+    "width": 9.375,
+    "height": 10.625
+  },
+  "governor": {
+    "width": 11.25,
+    "height": 12.1725
+  },
+  "badge": {
+    "width": 11.9167,
+    "height": 11.375
+  },
+  "search": {
+    "width": 12,
+    "height": 12
+  }
+}

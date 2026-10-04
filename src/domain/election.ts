@@ -6,6 +6,8 @@ export const candidateSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   shortName: z.string().min(1).optional(),
+  party: z.string().min(1).optional(),
+  uf: z.enum(states.map((state) => state.uf)).optional(),
   number: z.string().min(1),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
 })
@@ -16,6 +18,7 @@ export const resultSchema = z
     sectionMetric: z.enum(['counted', 'totalized']).optional(),
     disclosureAllowed: z.boolean().optional(),
     totalizationStatus: z.enum(['not-started', 'partial', 'completed']).optional(),
+    outcome: z.enum(['elected', 'runoff', 'counting', 'unassigned']).optional(),
     votes: z.array(
       z.object({
         candidateId: z.string(),
@@ -35,7 +38,7 @@ export const resultSchema = z
 export const snapshotSchema = z
   .object({
     year: z.literal(2026),
-    office: z.literal('president'),
+    office: z.enum(['president', 'governor']),
     round: z.union([z.literal(1), z.literal(2)]),
     source: z.enum(['mock', 'tse', 'tse-sim']),
     updatedAt: z.iso.datetime(),
@@ -55,7 +58,7 @@ export const snapshotSchema = z
               totalizedAt: z.iso.datetime().nullable(),
             }),
           )
-          .length(28),
+          .min(27).max(28),
       })
       .optional(),
     candidates: z.array(candidateSchema).min(2),
@@ -65,6 +68,17 @@ export const snapshotSchema = z
       .length(27),
   })
   .superRefine((snapshot, ctx) => {
+    if (snapshot.upstream && snapshot.upstream.files.length !== (snapshot.office === 'president' ? 28 : 27))
+      ctx.addIssue({ code: 'custom', message: 'Quantidade de arquivos incorreta para o cargo.' })
+    if (snapshot.office === 'governor') {
+      if (snapshot.national.votes.length || snapshot.candidates.some(c => !c.uf || !c.party))
+        ctx.addIssue({ code: 'custom', message: 'Governadores exigem candidatos estaduais e não têm votação nacional.' })
+      for (const state of snapshot.states) {
+        const local = snapshot.candidates.filter(c => c.uf === state.uf)
+        if (local.length < 2 || state.votes.length !== local.length || state.votes.some(v => !local.some(c => c.id === v.candidateId)))
+          ctx.addIssue({ code: 'custom', message: 'Candidatos não pertencem à disputa estadual.' })
+      }
+    }
     const ids = new Set(snapshot.candidates.map((candidate) => candidate.id))
     if (ids.size !== snapshot.candidates.length)
       ctx.addIssue({ code: 'custom', message: 'Identificadores de candidatos duplicados.' })
@@ -77,6 +91,7 @@ export const snapshotSchema = z
   })
 
 export type Candidate = z.infer<typeof candidateSchema>
+export type Office = 'president' | 'governor'
 export type ElectionResult = z.infer<typeof resultSchema>
 export type ElectionSnapshot = z.infer<typeof snapshotSchema>
 export type StateResult = ElectionSnapshot['states'][number]
@@ -89,6 +104,7 @@ export function rankedResults(result: ElectionResult, candidates: Candidate[]) {
   const hidden = result.disclosureAllowed === false || result.totalizationStatus === 'not-started'
   const total = result.votes.reduce((sum, vote) => sum + vote.count, 0)
   return candidates
+    .filter((candidate) => result.votes.some(vote => vote.candidateId === candidate.id))
     .map((candidate) => {
       const vote = result.votes.find((vote) => vote.candidateId === candidate.id)
       const votes = hidden ? 0 : (vote?.count ?? 0)

@@ -1,12 +1,13 @@
 import { z } from 'zod'
 import { snapshotSchema } from '../src/domain/election.ts'
-import type { ElectionSnapshot } from '../src/domain/election.ts'
+import type { ElectionSnapshot, Office } from '../src/domain/election.ts'
 
 export function createSupabaseReader(
   url: string,
   key: string,
   environment: string,
   fetcher = fetch,
+  office: Office = 'president',
 ) {
   if (!/^https:\/\/[a-z0-9]+\.supabase\.co$/.test(url)) throw new Error('URL Supabase inválida.')
   if (!key || !['oficial', 'simulado2026'].includes(environment))
@@ -15,6 +16,7 @@ export function createSupabaseReader(
     async load(): Promise<ElectionSnapshot> {
       const query = new URLSearchParams({
         environment: `eq.${environment}`,
+        office: `eq.${office}`,
         select: 'snapshot,last_checked_at,last_error',
         limit: '1',
       })
@@ -37,6 +39,7 @@ export function createSupabaseReader(
       if (!row) throw new Error('Aguardando a primeira coleta completa do TSE.')
       if (row.snapshot.source !== (environment === 'oficial' ? 'tse' : 'tse-sim'))
         throw new Error('Ambiente do snapshot incorreto.')
+      if (row.snapshot.office !== office) throw new Error('Cargo do snapshot incorreto.')
       const checked = new Date(row.last_checked_at)
       if (!Number.isFinite(checked.valueOf())) throw new Error('Data de coleta inválida.')
       return {

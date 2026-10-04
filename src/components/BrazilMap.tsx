@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import dimensions from '../data/asset-dimensions.json'
+import governorDimensions from '../data/governor-asset-dimensions.json'
 import { mapGeometry } from '../data/map-geometry'
 import { stateByUf } from '../data/states'
 import { designBlueStates } from '../data/design-colors'
@@ -37,7 +38,7 @@ export function BrazilMap({
       role="group"
       aria-labelledby={`${prefix}-title ${prefix}-desc`}
     >
-      <title id={`${prefix}-title`}>Apuração presidencial por estado</title>
+      <title id={`${prefix}-title`}>{data.office === 'president' ? 'Apuração presidencial por estado' : 'Apuração de governadores por estado'}</title>
       <desc id={`${prefix}-desc`}>
         Mapa geométrico do Brasil. Use Tab para focar uma UF, Enter ou Espaço para abrir detalhes e
         Escape para fechar. Modo:{' '}
@@ -52,7 +53,7 @@ export function BrazilMap({
         {mapGeometry.map((geometry) => {
           const color = mapColor(results.get(geometry.uf)!, data.candidates, mode)
           const originalColor = designBlueStates.has(geometry.uf) ? '#2563eb' : '#e11d48'
-          const preserveOriginal = mode === 'leader' && color === originalColor
+          const preserveOriginal = data.office === 'president' && mode === 'leader' && color === originalColor
           return (
             <filter
               id={`${prefix}-${geometry.uf}`}
@@ -85,7 +86,7 @@ export function BrazilMap({
       {displayGeometry.map((geometry) => {
         const result = results.get(geometry.uf)!,
           state = stateByUf[geometry.uf],
-          original = dimensions[geometry.uf]
+          original = (data.office === 'governor' ? governorDimensions : dimensions)[geometry.uf]
         const { leader, noVotes } = resultOverview(result, data.candidates)
         const label = `${state.name}, ${formatPercent(countedPercent(result), 1)} ${result.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}, ${noVotes ? 'sem votos' : leader ? `${leader.name} tem mais votos computados` : 'empate'}`
         return (
@@ -128,7 +129,7 @@ export function BrazilMap({
               transform={`translate(${geometry.x} ${geometry.y}) scale(${geometry.width / original.width} ${geometry.height / original.height})`}
             >
               <image
-                href={`/design/${geometry.uf}.svg`}
+                href={`/design/${data.office === 'governor' ? 'governors/' : ''}${geometry.uf}.svg`}
                 width={original.width}
                 height={original.height}
                 filter={`url(#${prefix}-${geometry.uf})`}
