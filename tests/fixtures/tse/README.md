@@ -13,3 +13,7 @@ Arquivos: `br/br-c0001-e021270-u.json` e `mt/mt-c0001-e021270-u.json`.
 da totalização (`and=n`, `dv=s`, `dt`/`ht` vazios). Origem:
 `https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.json`.
 Esse arquivo testa a ausência de totalização, sem presumir o estado atual da eleição.
+
+`governor-sp.json` e `governor-mt.json` foram coletados do ambiente oficial em
+04/10/2026, eleição 6259, cargo 0003. Testes que replicam uma amostra nas demais
+UFs fazem isso somente para testar o contrato; a aplicação coleta 27 arquivos reais.

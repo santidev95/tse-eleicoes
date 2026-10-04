@@ -36,7 +36,7 @@ variáveis, emitir um token temporário de upload, criar o deployment e vincular
 domínio. Os assets foram enviados pelo Wrangler com esse token; ele não foi salvo
 no repositório. Não existe vínculo Git/CI automático neste projeto Direct Upload.
 
-`public/_routes.json` restringe a execução da Function ao endpoint presidencial.
+`public/_routes.json` restringe as Functions a `/api/tse/presidential` e `/api/tse/governors`.
 Assets são servidos pelo Pages; a API usa `Cache-Control: no-store` e retorna 503
 em falhas de leitura. A interface preserva o último resultado em falhas de atualização.
 Para diagnóstico, consulte os deployments e logs das Functions no painel do Pages.

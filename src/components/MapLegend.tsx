@@ -13,7 +13,7 @@ export function MapLegend({ data, mode }: { data: ElectionSnapshot; mode: MapMod
   const leaders = data.candidates
     .filter((c) => counts.has(c.id))
     .sort((a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0))
-  const others = leaders.slice(2)
+  const others = leaders.slice(4)
   return (
     <div className="map-legend" aria-label="Legenda do mapa">
       <p className="eyebrow">
@@ -34,7 +34,7 @@ export function MapLegend({ data, mode }: { data: ElectionSnapshot; mode: MapMod
       ) : (
         <>
           <div className="leader-legend">
-            {leaders.slice(0, 2).map((candidate) => (
+            {leaders.slice(0, 4).map((candidate) => (
               <span key={candidate.id} title={candidate.name}>
                 <i className="dot" style={{ background: candidate.color }} />
                 {candidateLabel(candidate)}:{' '}

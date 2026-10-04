@@ -39,7 +39,7 @@
   color: white;
   font-weight: 600;
 }
-.governor-summary {
+.national-summary.governor-summary {
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
@@ -107,7 +107,7 @@
     padding-right: 24px;
   }
 }
-@media (max-width: 700px) {
+@media (max-width: 720px) {
   .header .office-selector {
     order: 3;
     width: 100%;
@@ -965,6 +965,13 @@ footer {
     column-gap: 16px;
     row-gap: 10px;
   }
+  .national-summary:not(.governor-summary) .national-candidates {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .national-summary:not(.governor-summary) .summary-candidate { min-width: 0; width: 100%; }
+  .national-summary:not(.governor-summary) .candidate-short { min-width: 0; flex: 1; }
+  .national-summary:not(.governor-summary) .national-margin { grid-column: 1 / -1; }
   .summary-candidate strong {
     font-size: 12px;
   }
