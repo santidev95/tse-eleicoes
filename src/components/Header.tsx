@@ -19,9 +19,13 @@ export function Header({
         timeZone: 'America/Sao_Paulo',
       })
     : null
-  const date = data ? new Date(data.updatedAt).toLocaleDateString('pt-BR', {
-    day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo',
-  }) : null
+  const date = data
+    ? new Date(data.updatedAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        timeZone: 'America/Sao_Paulo',
+      })
+    : null
   return (
     <header className="header">
       <div className="brand-context">
@@ -43,7 +47,10 @@ export function Header({
           <span className="mono">
             {stale ? 'SEM ATUALIZAÇÃO' : mock ? 'DEMONSTRAÇÃO' : simulation ? 'SIMULADO' : 'TSE'}
           </span>
-          <span className={`updated-at ${simulation ? 'simulation-date' : ''}`} title="Data de geração do arquivo nacional · horário de Brasília">
+          <span
+            className={`updated-at ${simulation ? 'simulation-date' : ''}`}
+            title="Data de geração do arquivo nacional · horário de Brasília"
+          >
             {loading ? 'Carregando…' : time ? `${date} · ${time} BRT` : 'Aguardando dados'}
           </span>
         </span>

@@ -16,7 +16,7 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
         <span className="separator-dot" />
         <strong className="mono">{formatPercent(countedPercent(data.national))}</strong>
         <span className="counted-caption">
-          apurado{' '}
+          {data.national.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}{' '}
           <span className="section-count">
             ({formatNumber(data.national.sectionsCounted)} seções)
           </span>
@@ -38,9 +38,17 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
                 className="dot candidate-dot"
                 style={{ background: candidate.color, color: candidate.color }}
               />
-              <span className="candidate-short" title={`${candidate.name} (${candidate.number}) · ${candidate.destination ?? 'Votos computados'}`}>
-                {candidateLabel(candidate)}{!candidate.shortName && ` (${candidate.number})`}
-                {candidate.destination && candidate.destination !== 'Válido' && <span className="destination-mark" aria-label={candidate.destination}>*</span>}
+              <span
+                className="candidate-short"
+                title={`${candidate.name} (${candidate.number}) · ${candidate.destination ?? 'Votos computados'}`}
+              >
+                {candidateLabel(candidate)}
+                {!candidate.shortName && ` (${candidate.number})`}
+                {candidate.destination && candidate.destination !== 'Válido' && (
+                  <span className="destination-mark" aria-label={candidate.destination}>
+                    *
+                  </span>
+                )}
               </span>
               <strong className="mono">{formatPercent(candidate.percent)}</strong>
             </div>
@@ -63,7 +71,12 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
           </strong>
         </div>
       </div>
-      {data.source !== 'mock' && <p className="sr-only">Mais votos computados. Percentuais e destinação conforme o TSE; não indica eleição do candidato.</p>}
+      {data.source !== 'mock' && (
+        <p className="sr-only">
+          Mais votos computados. Percentuais e destinação conforme o TSE; não indica eleição do
+          candidato.
+        </p>
+      )}
     </section>
   )
 }

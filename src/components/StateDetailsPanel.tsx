@@ -53,7 +53,7 @@ export function StateDetailsPanel({
       </p>
       <div className="panel-counted">
         <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>
-        <span>das seções apuradas</span>
+        <span>das seções {result.sectionMetric === 'totalized' ? 'totalizadas' : 'apuradas'}</span>
       </div>
       <p className="sections-detail">
         {formatNumber(result.sectionsCounted)} de {formatNumber(result.sectionsTotal)} seções
@@ -65,21 +65,34 @@ export function StateDetailsPanel({
             <div>
               <span>{candidate.name}</span>
               <small>{formatNumber(candidate.votes)} votos</small>
-              {candidate.destination && candidate.destination !== 'Válido' && <small className="vote-destination">{candidate.destination}</small>}
+              {candidate.destination && candidate.destination !== 'Válido' && (
+                <small className="vote-destination">{candidate.destination}</small>
+              )}
             </div>
             <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
           </li>
         ))}
       </ul>
-      {ranked.length > 3 && <details className="other-candidates">
-        <summary>Outros {ranked.length - 3} candidatos</summary>
-        <ul className="panel-candidates">{ranked.slice(3).map(candidate => <li key={candidate.id}>
-          <span className="dot" style={{ background: candidate.color }} />
-          <div><span>{candidate.name}</span><small>{formatNumber(candidate.votes)} votos</small>
-          {candidate.destination && candidate.destination !== 'Válido' && <small className="vote-destination">{candidate.destination}</small>}</div>
-          <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
-        </li>)}</ul>
-      </details>}
+      {ranked.length > 3 && (
+        <details className="other-candidates">
+          <summary>Outros {ranked.length - 3} candidatos</summary>
+          <ul className="panel-candidates">
+            {ranked.slice(3).map((candidate) => (
+              <li key={candidate.id}>
+                <span className="dot" style={{ background: candidate.color }} />
+                <div>
+                  <span>{candidate.name}</span>
+                  <small>{formatNumber(candidate.votes)} votos</small>
+                  {candidate.destination && candidate.destination !== 'Válido' && (
+                    <small className="vote-destination">{candidate.destination}</small>
+                  )}
+                </div>
+                <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       <div className="panel-margin">
         <span>Diferença entre os primeiros</span>
         <strong className="mono">
@@ -87,7 +100,8 @@ export function StateDetailsPanel({
         </strong>
       </div>
       <p className="panel-footnote">
-        Presidente da República · {round}º turno{mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}
+        Presidente da República · {round}º turno
+        {mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}
       </p>
     </aside>
   )

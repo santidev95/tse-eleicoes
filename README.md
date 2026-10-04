@@ -1,6 +1,6 @@
 # Eleições 2026 — apuração presidencial
 
-Aplicação React + TypeScript + Vite baseada no frame do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é apenas **Presidente da República**. Os candidatos e números são fictícios.
+Aplicação React + TypeScript + Vite baseada no frame do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é apenas **Presidente da República**. A fonte padrão é o **simulado oficial do TSE**, com candidatos fictícios; os resultados não são a apuração real das Eleições 2026.
 
 ## Executar
 
@@ -16,7 +16,9 @@ Abra a URL indicada pelo Vite, normalmente `http://localhost:5173`. Nenhuma chav
 ```sh
 npm run build       # TypeScript + bundle de produção em dist/
 npm run preview     # servir o build localmente
+npm start           # servidor Node com frontend de dist/ e API (após build)
 npm run check       # lint, testes de dados e build
+npm run test:tse    # consultar os 28 arquivos presidenciais do simulado TSE
 npx playwright install chromium --only-shell
 npm run test:e2e    # interações e acessibilidade em desktop/celular
 ```
@@ -40,15 +42,18 @@ src/data/        metadados das UFs, mocks e geometria do design
 src/domain/      contrato validado, cálculos e formatação
 src/services/    seleção da fonte e cliente do proxy TSE
 src/hooks/       carregamento, cancelamento, atualização e erros
+server/          API, download/cache compartilhado e adaptador EA20 do TSE
 public/design/   SVGs originais do Figma
 tests/           testes de navegador e acessibilidade
 docs/            referência visual e integração de produção
 ```
 
-O CSS é próprio, sem Tailwind, com os tokens da referência visual. As fontes são locais. O resultado nacional dos mocks é derivado dos estados; produção pode utilizar o agregado nacional oficial.
+O CSS é próprio, sem Tailwind, com os tokens da referência visual. As fontes são locais. O simulado usa os percentuais e o agregado nacional BR do TSE, preservando a destinação dos votos. A demonstração local `mock` continua disponível para desenvolvimento sem rede.
 
 ## Conectar o TSE
 
-Consulte [docs/tse-integration.md](docs/tse-integration.md). Configure `VITE_ELECTION_DATA_SOURCE=tse` e `VITE_TSE_PROXY_URL` **somente após implementar o adaptador no backend**. O frontend não presume URLs ou o esquema oficial de 2026 e não faz fallback para mocks em produção.
+O simulado já funciona por `GET /api/tse/presidential`, servido pelo próprio projeto. Não é necessário criar um `.env` para usá-lo. O servidor mantém cache em memória por 30 segundos, limita downloads simultâneos e valida BR + 27 UFs antes de publicar. A interface identifica o ambiente e mostra a data do arquivo, sem apresentá-lo como apuração ao vivo.
+
+Consulte [docs/tse-integration.md](docs/tse-integration.md) para endpoints, interpretação EA20, tratamento de erros e futura conexão de produção. Não há gravação em banco ainda; a proposta para guardar o histórico está em [docs/persistence-plan.md](docs/persistence-plan.md).
 
 O `.env.example` documenta a seleção de fonte. Consulte [docs/design.md](docs/design.md) para a origem dos assets e as adaptações do frame.

@@ -1,38 +1,79 @@
 import { z } from 'zod'
-import { snapshotSchema } from '../src/domain/election'
-import type { Candidate, ElectionResult, ElectionSnapshot } from '../src/domain/election'
-import { states } from '../src/data/states'
+import { snapshotSchema } from '../src/domain/election.ts'
+import type { Candidate, ElectionResult, ElectionSnapshot } from '../src/domain/election.ts'
+import { states } from '../src/data/states.ts'
 
 // Verified on the TSE technical page. Never infer a production election from these codes.
 export const SIMULATION = {
   baseUrl: 'https://resultados-sim.tse.jus.br/simulado/simulado2026',
-  cycle: 'ele2026', electionCode: '21270', round: 1,
+  cycle: 'ele2026',
+  electionCode: '21270',
+  round: 1,
 } as const
 export const resultUrl = (scope: string) => {
-  if (scope !== 'br' && !states.some(state => state.uf.toLowerCase() === scope))
+  if (scope !== 'br' && !states.some((state) => state.uf.toLowerCase() === scope))
     throw new Error('Abrangência inválida.')
   return `${SIMULATION.baseUrl}/${SIMULATION.cycle}/${SIMULATION.electionCode}/dados/${scope}/${scope}-c0001-e021270-u.json`
 }
 
-const integer = z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER))
-const decimal = z.string().regex(/^\d+(?:,\d+)?$/).transform(value => Number(value.replace(',', '.'))).pipe(z.number().min(0).max(100))
+const integer = z
+  .string()
+  .regex(/^\d+$/)
+  .transform(Number)
+  .pipe(z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER))
+const decimal = z
+  .string()
+  .regex(/^\d+(?:,\d+)?$/)
+  .transform((value) => Number(value.replace(',', '.')))
+  .pipe(z.number().min(0).max(100))
 const candidateSchema = z.object({
-  n: z.string().min(1), sqcand: z.string().min(1), nm: z.string().min(1),
-  nmu: z.string().min(1), vap: integer, pvapn: decimal,
-  dvt: z.string().min(1), st: z.string(),
+  n: z.string().min(1),
+  sqcand: z.string().min(1),
+  nm: z.string().min(1),
+  nmu: z.string().min(1),
+  vap: integer,
+  pvapn: decimal,
+  dvt: z.string().min(1),
+  st: z.string(),
 })
 const ea20Schema = z.object({
-  ele: z.literal(SIMULATION.electionCode), t: z.literal('1'), f: z.literal('s'),
-  cdabr: z.string(), tpabr: z.enum(['br', 'uf']),
-  dg: z.string(), hg: z.string(), dt: z.string(), ht: z.string(), idg: z.string().min(1),
+  ele: z.literal(SIMULATION.electionCode),
+  t: z.literal('1'),
+  f: z.literal('s'),
+  cdabr: z.string(),
+  tpabr: z.enum(['br', 'uf']),
+  dg: z.string(),
+  hg: z.string(),
+  dt: z.string(),
+  ht: z.string(),
+  idg: z.string().min(1),
   s: z.object({ ts: integer, st: integer }),
-  carg: z.array(z.object({
-    cd: z.string(), agr: z.array(z.object({
-      par: z.array(z.object({ cand: z.array(candidateSchema) })),
-    })),
-  })),
+  carg: z.array(
+    z.object({
+      cd: z.string(),
+      agr: z.array(
+        z.object({
+          par: z.array(z.object({ cand: z.array(candidateSchema) })),
+        }),
+      ),
+    }),
+  ),
 })
-const palette = ['#e11d48', '#0d9488', '#a855f7', '#c084fc', '#d97706', '#db2777', '#65a30d', '#0891b2', '#4f46e5', '#c2410c', '#059669', '#64748b', '#2563eb']
+const palette = [
+  '#e11d48',
+  '#0d9488',
+  '#a855f7',
+  '#c084fc',
+  '#d97706',
+  '#db2777',
+  '#65a30d',
+  '#0891b2',
+  '#4f46e5',
+  '#c2410c',
+  '#059669',
+  '#64748b',
+  '#2563eb',
+]
 
 export function tseTimestamp(date: string, time: string) {
   const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(date)
@@ -48,52 +89,75 @@ export function decodeEa20(raw: unknown, scope: string) {
   const file = ea20Schema.parse(raw)
   if (file.cdabr !== scope || file.tpabr !== (scope === 'br' ? 'br' : 'uf'))
     throw new Error('Abrangência do arquivo TSE não corresponde à solicitação.')
-  const offices = file.carg.filter(office => office.cd === '1')
+  const offices = file.carg.filter((office) => office.cd === '1')
   if (offices.length !== 1) throw new Error('Arquivo não contém um único cargo presidencial.')
-  const candidates = offices[0].agr.flatMap(group => group.par.flatMap(party => party.cand))
-  if (candidates.length < 2 || new Set(candidates.map(c => c.sqcand)).size !== candidates.length)
+  const candidates = offices[0].agr.flatMap((group) => group.par.flatMap((party) => party.cand))
+  if (candidates.length < 2 || new Set(candidates.map((c) => c.sqcand)).size !== candidates.length)
     throw new Error('Lista de candidatos TSE inválida.')
   const result: ElectionResult = {
-    sectionsTotal: file.s.ts, sectionsCounted: file.s.st,
-    votes: candidates.map(c => ({
-      candidateId: c.sqcand, count: c.vap, percent: c.pvapn,
-      destination: c.dvt, status: c.st,
+    sectionsTotal: file.s.ts,
+    sectionsCounted: file.s.st,
+    sectionMetric: 'totalized',
+    votes: candidates.map((c) => ({
+      candidateId: c.sqcand,
+      count: c.vap,
+      percent: c.pvapn,
+      destination: c.dvt,
+      status: c.st,
     })),
   }
   return {
-    result, candidates,
+    result,
+    candidates,
     metadata: {
-      scope: scope.toUpperCase(), url: resultUrl(scope), generationId: file.idg,
-      generatedAt: tseTimestamp(file.dg, file.hg), totalizedAt: tseTimestamp(file.dt, file.ht),
+      scope: scope.toUpperCase(),
+      url: resultUrl(scope),
+      generationId: file.idg,
+      generatedAt: tseTimestamp(file.dg, file.hg),
+      totalizedAt: tseTimestamp(file.dt, file.ht),
     },
   }
 }
 
-export function normalizeSimulation(rawFiles: Map<string, unknown>, fetchedAt: string): ElectionSnapshot {
+export function normalizeSimulation(
+  rawFiles: Map<string, unknown>,
+  fetchedAt: string,
+): ElectionSnapshot {
   const national = decodeEa20(rawFiles.get('br'), 'br')
   const candidates: Candidate[] = [...national.candidates]
     .sort((a, b) => Number(a.n) - Number(b.n))
     .map((c, i) => ({
-      id: c.sqcand, name: c.nmu, number: c.n,
+      id: c.sqcand,
+      name: c.nmu,
+      number: c.n,
       // Compact labels prevent the intentionally long names in the simulation breaking the layout.
-      shortName: `Cand. ${c.n}`, color: palette[i % palette.length],
+      shortName: `Cand. ${c.n}`,
+      color: palette[i % palette.length],
     }))
   const files = [national.metadata]
-  const regional = states.map(state => {
+  const regional = states.map((state) => {
     const parsed = decodeEa20(rawFiles.get(state.uf.toLowerCase()), state.uf.toLowerCase())
-    const localIds = parsed.candidates.map(c => c.sqcand)
-    if (localIds.length !== candidates.length || candidates.some(c => !localIds.includes(c.id)))
+    const localIds = parsed.candidates.map((c) => c.sqcand)
+    if (localIds.length !== candidates.length || candidates.some((c) => !localIds.includes(c.id)))
       throw new Error(`Candidatos divergentes em ${state.uf}.`)
     files.push(parsed.metadata)
     return { ...parsed.result, uf: state.uf }
   })
   // BR is authoritative and includes overseas votes. It must not be replaced by a UF sum.
   return snapshotSchema.parse({
-    year: 2026, office: 'president', round: 1, source: 'tse-sim',
-    updatedAt: national.metadata.generatedAt, candidates,
-    national: national.result, states: regional,
+    year: 2026,
+    office: 'president',
+    round: 1,
+    source: 'tse-sim',
+    updatedAt: national.metadata.generatedAt,
+    candidates,
+    national: national.result,
+    states: regional,
     upstream: {
-      electionCode: SIMULATION.electionCode, environment: 'simulado2026', fetchedAt, files,
+      electionCode: SIMULATION.electionCode,
+      environment: 'simulado2026',
+      fetchedAt,
+      files,
     },
   })
 }

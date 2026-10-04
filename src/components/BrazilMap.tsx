@@ -83,7 +83,7 @@ export function BrazilMap({
           state = stateByUf[geometry.uf],
           original = dimensions[geometry.uf]
         const { leader, noVotes } = resultOverview(result, data.candidates)
-        const label = `${state.name}, ${formatPercent(countedPercent(result), 1)} apurado, ${noVotes ? 'sem votos' : leader ? `${leader.name} lidera` : 'empate'}`
+        const label = `${state.name}, ${formatPercent(countedPercent(result), 1)} ${result.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}, ${noVotes ? 'sem votos' : leader ? `${leader.name} tem mais votos computados` : 'empate'}`
         return (
           <g
             key={geometry.uf}

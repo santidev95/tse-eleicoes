@@ -17,8 +17,13 @@ export default defineConfig({
     },
     {
       name: 'tse-proxy',
-      testMatch: 'tse-errors.spec.ts',
+      testMatch: ['tse-errors.spec.ts', 'tse-simulation.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:5174' },
+    },
+    {
+      name: 'tse-sim-mobile',
+      testMatch: 'tse-simulation.spec.ts',
+      use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 }, baseURL: 'http://127.0.0.1:5174' },
     },
   ],
   webServer: [
@@ -32,7 +37,7 @@ export default defineConfig({
       command: 'npm run dev -- --host 127.0.0.1 --port 5174 --strictPort',
       url: 'http://127.0.0.1:5174',
       reuseExistingServer: !process.env.CI,
-      env: { VITE_ELECTION_DATA_SOURCE: 'tse', VITE_TSE_PROXY_URL: '/api/tse/presidential' },
+      env: { VITE_ELECTION_DATA_SOURCE: 'tse-sim', VITE_TSE_PROXY_URL: '/api/tse/presidential' },
     },
   ],
 })

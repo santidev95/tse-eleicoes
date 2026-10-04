@@ -10,9 +10,19 @@ for (const mode of ['desktop', 'mobile']) {
   )
   const page = await context.newPage()
   const failures = []
-  page.on('requestfailed', (request) => failures.push(request.url()))
+  page.on('requestfailed', (request) => {
+    const error = request.failure()?.errorText
+    // React StrictMode deliberately cancels its first API request on effect cleanup.
+    if (request.url().endsWith('/api/tse/presidential') && error === 'net::ERR_ABORTED') return
+    failures.push(`${request.url()}: ${error}`)
+  })
   await page.goto('http://127.0.0.1:5173')
   await page.locator('[data-state="BA"]').waitFor()
+  const data = await page.request.get('http://127.0.0.1:5173/api/tse/presidential').then(r => r.json())
+  if (data.source !== 'tse-sim' || data.states.length !== 27 || data.upstream.files.length !== 28)
+    throw new Error('The preview must use the real TSE simulation API.')
+  if (!(await page.locator('.source-badge').innerText()).includes('Simulado TSE'))
+    throw new Error('The preview must identify the simulation.')
   await page.evaluate(() => document.fonts.ready)
   await page.waitForLoadState('networkidle')
   await page.mouse.move(0, 0)
@@ -24,18 +34,16 @@ for (const mode of ['desktop', 'mobile']) {
     )
   })
   await page.screenshot({ path: `artifacts/${mode}-details.png`, fullPage: true })
-  const dimensions = await page
-    .locator('.brazil-map image')
-    .evaluateAll((images) =>
-      images.map((image) => ({
-        href: image.getAttribute('href'),
-        width: image.getAttribute('width'),
-        height: image.getAttribute('height'),
-        visible: image.getBoundingClientRect().width > 0,
-      })),
-    )
+  const dimensions = await page.locator('.brazil-map image').evaluateAll((images) =>
+    images.map((image) => ({
+      href: image.getAttribute('href'),
+      width: image.getAttribute('width'),
+      height: image.getAttribute('height'),
+      visible: image.getBoundingClientRect().width > 0,
+    })),
+  )
   if (dimensions.length !== 27 || dimensions.some((image) => !image.visible) || failures.length)
-    throw new Error('Missing or failed map asset')
+    throw new Error(`Missing or failed map asset: ${JSON.stringify({ dimensions, failures })}`)
   console.log(`${mode}: 27 SVGs rendered; no failed requests; screenshots captured.`)
   await context.close()
 }

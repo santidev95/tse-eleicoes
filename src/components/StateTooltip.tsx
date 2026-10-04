@@ -1,5 +1,11 @@
 import { stateByUf } from '../data/states'
-import { candidateLabel, countedPercent, formatMargin, formatPercent, resultOverview } from '../domain/election'
+import {
+  candidateLabel,
+  countedPercent,
+  formatMargin,
+  formatPercent,
+  resultOverview,
+} from '../domain/election'
 import type { Candidate, StateResult } from '../domain/election'
 export interface HoverTarget {
   uf: StateResult['uf']
@@ -18,7 +24,7 @@ export function StateTooltip({
   const state = stateByUf[result.uf]
   const { ranked, leader, noVotes, margin } = resultOverview(result, candidates)
   const x = Math.max(12, Math.min(position.x + 18, window.innerWidth - 256))
-  const y = Math.max(12, Math.min(position.y + 16, window.innerHeight - 220))
+  const y = Math.max(12, Math.min(position.y + 16, window.innerHeight - 248))
   return (
     <div className="state-tooltip" id="state-tooltip" role="tooltip" style={{ left: x, top: y }}>
       <div className="tooltip-heading">
@@ -26,7 +32,8 @@ export function StateTooltip({
         <span>{state.uf}</span>
       </div>
       <p className="tooltip-counted">
-        <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong> apurado
+        <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>{' '}
+        {result.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}
       </p>
       <div className="tooltip-candidates">
         {ranked.slice(0, 2).map((candidate) => (
@@ -39,7 +46,9 @@ export function StateTooltip({
           </div>
         ))}
       </div>
-      {ranked[0]?.destination && ranked[0].destination !== 'Válido' && <p className="tooltip-destination">{ranked[0].destination}</p>}
+      {ranked[0]?.destination && ranked[0].destination !== 'Válido' && (
+        <p className="tooltip-destination">{ranked[0].destination}</p>
+      )}
       <div className="tooltip-margin">
         <span>Diferença</span>
         <strong className="mono">

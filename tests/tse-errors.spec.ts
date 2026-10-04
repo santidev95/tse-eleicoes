@@ -9,7 +9,7 @@ test('initial loading, error and manual retry use the normalized proxy', async (
         release = resolve
       })
       await route.fulfill({ status: 503, body: '' })
-    } else await route.fulfill({ json: { ...createMockSnapshot(), source: 'tse' } })
+    } else await route.fulfill({ json: { ...createMockSnapshot(), source: 'tse-sim' } })
   })
   await page.goto('/')
   await expect(page.getByText('Carregando a apuração presidencial…')).toBeVisible()
@@ -21,14 +21,14 @@ test('initial loading, error and manual retry use the normalized proxy', async (
   await page.getByRole('button', { name: 'Tentar novamente' }).click()
   await expect(page.locator('[data-state]')).toHaveCount(27)
   await expect(page.getByRole('alert')).toHaveCount(0)
-  await expect(page.locator('.source-badge')).toContainText('Fonte: TSE')
+  await expect(page.locator('.source-badge')).toContainText('Simulado TSE')
 })
 test('a failed update keeps the last snapshot and recovers on retry', async ({ page }) => {
   let succeeds = true
   await page.clock.install()
   await page.route('**/api/tse/presidential', (route) =>
     succeeds
-      ? route.fulfill({ json: { ...createMockSnapshot(), source: 'tse' } })
+      ? route.fulfill({ json: { ...createMockSnapshot(), source: 'tse-sim' } })
       : route.fulfill({ status: 502, body: '' }),
   )
   await page.goto('/')

@@ -28,21 +28,14 @@
           "sg": "Federacao teste para string longa especiais 99!@#$\"TSE\"",
           "nm": "Federacao teste para string longa especiais 99!@#$\"TSE\"",
           "com": "Federacao teste para string longa especiais 99!@#$\"TSE\"",
-          "npar": [
-            "64",
-            "85"
-          ]
+          "npar": ["64", "85"]
         },
         {
           "n": "101",
           "sg": "F 9998",
           "nm": "FEDERAÇÃO 9998",
           "com": "F 9998",
-          "npar": [
-            "60",
-            "82",
-            "87"
-          ]
+          "npar": ["60", "82", "87"]
         }
       ],
       "agr": [

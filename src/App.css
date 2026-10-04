@@ -199,12 +199,30 @@ main:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.destination-mark { margin-left: 3px; color: #fbbf24; }
-.other-leaders { background: conic-gradient(#a855f7, #0d9488, #d97706, #a855f7); }
-.tooltip-destination { color: #fcd34d; font-size: 10px; margin-top: 8px; }
-.other-candidates { margin-top: 12px; font-size: 11px; color: var(--muted); }
-.other-candidates summary { cursor: pointer; padding: 6px 0; }
-.panel-candidates .vote-destination { color: #fcd34d; }
+.destination-mark {
+  margin-left: 3px;
+  color: #fbbf24;
+}
+.other-leaders {
+  background: conic-gradient(#a855f7, #0d9488, #d97706, #a855f7);
+}
+.tooltip-destination {
+  color: #fcd34d;
+  font-size: 10px;
+  margin-top: 8px;
+}
+.other-candidates {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.other-candidates summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.panel-candidates .vote-destination {
+  color: #fcd34d;
+}
 .summary-candidate strong {
   font-size: 14px;
   color: white;
@@ -534,7 +552,10 @@ main:focus {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.panel-candidates .dot, .panel-candidates strong { flex-shrink: 0; }
+.panel-candidates .dot,
+.panel-candidates strong {
+  flex-shrink: 0;
+}
 .panel-candidates small {
   font-size: 10px;
   color: var(--muted);
@@ -776,7 +797,10 @@ footer {
   .updated-at {
     display: none;
   }
-  .simulation-date { display: inline; font-size: 9px; }
+  .simulation-date {
+    display: inline;
+    font-size: 9px;
+  }
   .search-trigger {
     padding: 6px 8px;
   }

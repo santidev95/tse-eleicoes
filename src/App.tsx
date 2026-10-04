@@ -139,8 +139,8 @@ function App() {
         {data?.source === 'tse-sim'
           ? 'Simulado do TSE · candidatos fictícios · mais votos computados · não representa resultados oficiais'
           : data?.source === 'tse'
-          ? 'Fonte: Tribunal Superior Eleitoral (TSE) · Apuração presidencial'
-          : 'Demonstração visual · candidatos e resultados fictícios · sem conexão com a apuração oficial'}
+            ? 'Fonte: Tribunal Superior Eleitoral (TSE) · Apuração presidencial'
+            : 'Demonstração visual · candidatos e resultados fictícios · sem conexão com a apuração oficial'}
       </footer>
       <StateSearch open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={setSelected} />
     </div>
