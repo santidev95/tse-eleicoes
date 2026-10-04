@@ -5,3 +5,5 @@ package-lock.json
 test-results
 playwright-report
 artifacts
+worker-configuration.d.ts
+.wrangler

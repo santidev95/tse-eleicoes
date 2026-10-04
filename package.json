@@ -15,7 +15,10 @@
     "test:e2e": "playwright test",
     "check": "npm run lint && npm test && npm run build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "pages:types": "wrangler types worker-configuration.d.ts --env-interface Env",
+    "pages:build": "npm run build && tsc -p tsconfig.pages.json && wrangler pages functions build --outdir artifacts/pages-function --minify",
+    "pages:deploy": "npm run pages:build && wrangler pages deploy dist --project-name eleicoes-dadosabertos --branch main"
   },
   "dependencies": {
     "@fontsource/geist": "^5.3.0",

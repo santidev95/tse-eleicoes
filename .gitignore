@@ -30,3 +30,5 @@ artifacts
 *.sw?
 .npm-cache/
 supabase/.temp/
+.wrangler/
+.dev.vars*
