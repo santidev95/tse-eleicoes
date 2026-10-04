@@ -1,0 +1,122 @@
+{
+  "AC": {
+    "width": 100.527,
+    "height": 85.3521
+  },
+  "AL": {
+    "width": 55.1756,
+    "height": 32.025
+  },
+  "AM": {
+    "width": 245.125,
+    "height": 199.257
+  },
+  "AP": {
+    "width": 85.3531,
+    "height": 85.1627
+  },
+  "BA": {
+    "width": 184.139,
+    "height": 161.308
+  },
+  "badge": {
+    "width": 11.9167,
+    "height": 11.375
+  },
+  "CE": {
+    "width": 77.6049,
+    "height": 70.0046
+  },
+  "DF": {
+    "width": 24.624,
+    "height": 24.624
+  },
+  "ES": {
+    "width": 47.2174,
+    "height": 62.4525
+  },
+  "GO": {
+    "width": 100.423,
+    "height": 115.644
+  },
+  "MA": {
+    "width": 85.172,
+    "height": 108.079
+  },
+  "MG": {
+    "width": 153.603,
+    "height": 138.364
+  },
+  "MS": {
+    "width": 115.706,
+    "height": 130.946
+  },
+  "MT": {
+    "width": 168.829,
+    "height": 161.21
+  },
+  "PA": {
+    "width": 206.893,
+    "height": 168.778
+  },
+  "PB": {
+    "width": 77.8964,
+    "height": 39.5841
+  },
+  "PE": {
+    "width": 116.236,
+    "height": 47.2008
+  },
+  "PI": {
+    "width": 62.4841,
+    "height": 123.33
+  },
+  "pointer": {
+    "width": 10.1062,
+    "height": 12.25
+  },
+  "PR": {
+    "width": 146.448,
+    "height": 69.9872
+  },
+  "RJ": {
+    "width": 85.7137,
+    "height": 44.2826
+  },
+  "RN": {
+    "width": 62.4656,
+    "height": 47.2082
+  },
+  "RO": {
+    "width": 123.253,
+    "height": 92.7937
+  },
+  "RR": {
+    "width": 100.648,
+    "height": 85.1544
+  },
+  "RS": {
+    "width": 138.94,
+    "height": 92.8298
+  },
+  "SC": {
+    "width": 100.798,
+    "height": 47.1655
+  },
+  "SE": {
+    "width": 47.5184,
+    "height": 35.0849
+  },
+  "search": {
+    "width": 12,
+    "height": 12
+  },
+  "SP": {
+    "width": 169.012,
+    "height": 92.7851
+  },
+  "TO": {
+    "width": 92.894,
+    "height": 123.426
+  }
+}

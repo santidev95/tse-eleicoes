@@ -1,0 +1,37 @@
+import { defineConfig, devices } from '@playwright/test'
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: false,
+  reporter: 'list',
+  use: { baseURL: 'http://127.0.0.1:5173', trace: 'retain-on-failure' },
+  projects: [
+    {
+      name: 'desktop',
+      testMatch: 'election.spec.ts',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 1004 } },
+    },
+    {
+      name: 'mobile',
+      testMatch: 'election.spec.ts',
+      use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
+    },
+    {
+      name: 'tse-proxy',
+      testMatch: 'tse-errors.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:5174' },
+    },
+  ],
+  webServer: [
+    {
+      command: 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort',
+      url: 'http://127.0.0.1:5173',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'npm run dev -- --host 127.0.0.1 --port 5174 --strictPort',
+      url: 'http://127.0.0.1:5174',
+      reuseExistingServer: !process.env.CI,
+      env: { VITE_ELECTION_DATA_SOURCE: 'tse', VITE_TSE_PROXY_URL: '/api/tse/presidential' },
+    },
+  ],
+})
