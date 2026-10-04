@@ -5,6 +5,7 @@ const count = z.number().int().nonnegative()
 export const candidateSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
+  shortName: z.string().min(1).optional(),
   number: z.string().min(1),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
 })
@@ -12,7 +13,12 @@ export const resultSchema = z
   .object({
     sectionsTotal: count,
     sectionsCounted: count,
-    votes: z.array(z.object({ candidateId: z.string(), count })),
+    votes: z.array(z.object({
+      candidateId: z.string(), count,
+      percent: z.number().min(0).max(100).optional(),
+      destination: z.string().optional(),
+      status: z.string().optional(),
+    })),
   })
   .superRefine((value, ctx) => {
     if (value.sectionsCounted > value.sectionsTotal)
@@ -25,8 +31,17 @@ export const snapshotSchema = z
     year: z.literal(2026),
     office: z.literal('president'),
     round: z.union([z.literal(1), z.literal(2)]),
-    source: z.enum(['mock', 'tse']),
+    source: z.enum(['mock', 'tse', 'tse-sim']),
     updatedAt: z.iso.datetime(),
+    upstream: z.object({
+      electionCode: z.string(),
+      environment: z.string(),
+      fetchedAt: z.iso.datetime(),
+      files: z.array(z.object({
+        scope: z.string(), url: z.url(), generationId: z.string(),
+        generatedAt: z.iso.datetime(), totalizedAt: z.iso.datetime(),
+      })).length(28),
+    }).optional(),
     candidates: z.array(candidateSchema).min(2),
     national: resultSchema,
     states: z
@@ -58,8 +73,12 @@ export function rankedResults(result: ElectionResult, candidates: Candidate[]) {
   const total = result.votes.reduce((sum, vote) => sum + vote.count, 0)
   return candidates
     .map((candidate) => {
-      const votes = result.votes.find((vote) => vote.candidateId === candidate.id)?.count ?? 0
-      return { ...candidate, votes, percent: total === 0 ? 0 : (votes / total) * 100 }
+      const vote = result.votes.find((vote) => vote.candidateId === candidate.id)
+      const votes = vote?.count ?? 0
+      return { ...candidate, votes,
+        percent: vote?.percent ?? (total === 0 ? 0 : (votes / total) * 100),
+        destination: vote?.destination, status: vote?.status,
+      }
     })
     .sort((a, b) => b.votes - a.votes || a.id.localeCompare(b.id))
 }
@@ -82,6 +101,7 @@ export function resultOverview(result: ElectionResult, candidates: Candidate[]) 
 export const formatPercent = (value: number, digits = 2) =>
   `${value.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`
 export const formatNumber = (value: number) => value.toLocaleString('pt-BR')
+export const candidateLabel = (candidate: Candidate) => candidate.shortName ?? candidate.name
 export const formatMargin = (value: number) =>
   `${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} p.p.`
 
