@@ -7,14 +7,14 @@ O plugin informou custo de criação de US$ 0/mês, confirmado pelo usuário.
 
 ## Onde os dados ficam
 
-| Tabela | Conteúdo e acesso |
-| --- | --- |
-| `tse_private.file_versions` | JSON bruto de cada abrangência, URL, IDG, SHA-256, ETag, datas originais no payload e datas normalizadas; apenas servidor |
-| `tse_private.snapshots` | Conjunto validado, referências às 28 versões, hash e versão do adaptador; apenas servidor |
-| `public.tse_latest` | Último snapshot completo, última verificação e erro; leitura pública com RLS, escrita somente do servidor |
-| `tse_private.collection_runs` | Histórico de tentativas, resultado e erro |
-| `tse_private.collector_state` | Lock com expiração e próxima tentativa permitida |
-| `tse_private.collector_credentials` | Somente o hash da credencial do coletor |
+| Tabela                              | Conteúdo e acesso                                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `tse_private.file_versions`         | JSON bruto de cada abrangência, URL, IDG, SHA-256, ETag, datas originais no payload e datas normalizadas; apenas servidor |
+| `tse_private.snapshots`             | Conjunto validado, referências às 28 versões, hash e versão do adaptador; apenas servidor                                 |
+| `public.tse_latest`                 | Último snapshot completo, última verificação e erro; leitura pública com RLS, escrita somente do servidor                 |
+| `tse_private.collection_runs`       | Histórico de tentativas, resultado e erro                                                                                 |
+| `tse_private.collector_state`       | Lock com expiração e próxima tentativa permitida                                                                          |
+| `tse_private.collector_credentials` | Somente o hash da credencial do coletor                                                                                   |
 
 Ambiente, eleição e abrangência fazem parte da identidade das versões. O
 simulado fica separado do oficial. Todas as tabelas têm RLS; o schema privado

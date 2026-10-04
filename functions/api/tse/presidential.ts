@@ -3,7 +3,10 @@ import { createSupabaseReader } from '../../../server/supabase-reader.ts'
 export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }
   if (request.method !== 'GET')
-    return Response.json({ message: 'Método não permitido.' }, { status: 405, headers: { ...headers, Allow: 'GET' } })
+    return Response.json(
+      { message: 'Método não permitido.' },
+      { status: 405, headers: { ...headers, Allow: 'GET' } },
+    )
   try {
     const snapshot = await createSupabaseReader(
       env.SUPABASE_URL,

@@ -9,7 +9,13 @@ const br = JSON.parse(readFileSync('tests/fixtures/tse/official-br.json', 'utf8'
 const files = () =>
   new Map<string, unknown>([
     ['br', br],
-    ...states.map((s) => [s.uf.toLowerCase(), { ...br, tpabr: 'uf', cdabr: s.uf.toLowerCase() }] as [string, unknown]),
+    ...states.map(
+      (s) =>
+        [s.uf.toLowerCase(), { ...br, tpabr: 'uf', cdabr: s.uf.toLowerCase() }] as [
+          string,
+          unknown,
+        ],
+    ),
   ])
 const snapshot = () => normalizeTse(files(), '2026-10-04T20:00:00.000Z', OFFICIAL)
 afterEach(() => vi.useRealTimers())

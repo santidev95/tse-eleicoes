@@ -8,3 +8,8 @@ de outras UFs nem um fallback da aplicação.
 
 Origem: `https://resultados-sim.tse.jus.br/simulado/simulado2026/ele2026/21270/dados/`
 Arquivos: `br/br-c0001-e021270-u.json` e `mt/mt-c0001-e021270-u.json`.
+
+`official-br.json` foi obtido do ambiente oficial em 04/10/2026, antes do início
+da totalização (`and=n`, `dv=s`, `dt`/`ht` vazios). Origem:
+`https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.json`.
+Esse arquivo testa a ausência de totalização, sem presumir o estado atual da eleição.

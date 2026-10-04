@@ -3,11 +3,9 @@
   "name": "eleicoes-dadosabertos",
   "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-10-04",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "SUPABASE_URL": "https://tcdazqafanzvbrgovnnn.supabase.co",
-    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_91SuUoYikI_new6eboMYNA_VoyNU0uw"
-  }
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_91SuUoYikI_new6eboMYNA_VoyNU0uw",
+  },
 }

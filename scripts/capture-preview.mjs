@@ -1,5 +1,6 @@
 import { chromium, devices } from '@playwright/test'
 import fs from 'node:fs/promises'
+const baseUrl = process.env.PREVIEW_URL ?? 'http://127.0.0.1:5173'
 await fs.mkdir('artifacts', { recursive: true })
 const browser = await chromium.launch()
 for (const mode of ['desktop', 'mobile']) {
@@ -16,11 +17,9 @@ for (const mode of ['desktop', 'mobile']) {
     if (request.url().endsWith('/api/tse/presidential') && error === 'net::ERR_ABORTED') return
     failures.push(`${request.url()}: ${error}`)
   })
-  await page.goto('http://127.0.0.1:5173')
+  await page.goto(baseUrl)
   await page.locator('[data-state="BA"]').waitFor()
-  const data = await page.request
-    .get('http://127.0.0.1:5173/api/tse/presidential')
-    .then((r) => r.json())
+  const data = await page.request.get(`${baseUrl}/api/tse/presidential`).then((r) => r.json())
   if (
     data.source !== 'tse' ||
     data.states.length !== 27 ||

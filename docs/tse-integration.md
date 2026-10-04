@@ -23,10 +23,10 @@ As configurações são fixadas em `server/tse-adapter.ts`, após conferência d
 [documentação técnica do TSE](https://www.tse.jus.br/eleicoes/informacoes-tecnicas-sobre-a-divulgacao-de-resultados)
 e de `ele-c.json`.
 
-| Ambiente | Base | Ciclo | Eleição | Fase |
-| --- | --- | --- | --- | --- |
-| Oficial | `https://resultados.tse.jus.br/oficial` | `ele2026` | `6257` | `o` |
-| Simulado | `https://resultados-sim.tse.jus.br/simulado/simulado2026` | `ele2026` | `21270` | `s` |
+| Ambiente | Base                                                      | Ciclo     | Eleição | Fase |
+| -------- | --------------------------------------------------------- | --------- | ------- | ---- |
+| Oficial  | `https://resultados.tse.jus.br/oficial`                   | `ele2026` | `6257`  | `o`  |
+| Simulado | `https://resultados-sim.tse.jus.br/simulado/simulado2026` | `ele2026` | `21270` | `s`  |
 
 Configuração: `<base>/comum/config/ele-c.json`.
 
@@ -39,17 +39,17 @@ aceita apenas BR e as 27 UFs conhecidas, sem explorar municípios ou outros carg
 
 Referência: [especificação EA20](https://www.tse.jus.br/eleicoes/eleicoes-2026-content/arquivos/divulgacao-de-resultados/tse-ea20-arquivo-de-resultado-unificado).
 
-| Campo | Tratamento |
-| --- | --- |
-| `ele`, `t`, `f`, `cdabr`, `tpabr`, `carg[].cd` | Validação de eleição, turno, ambiente, abrangência e cargo presidencial |
-| `sqcand`, `n`, `nmu` | Identidade, número e nome de urna; catálogo consistente entre arquivos |
-| `vap`, `pvapn` | Votos computados e percentual informado pelo TSE, preservando o denominador da fonte |
-| `dvt`, `st` | Destinação e situação; destinação ausente permanece ausente |
-| `s.ts`, `s.st` | Seções totais e totalizadas; o indicador não usa `s.sa` |
-| `dv` | Com `n`, a interface informa votação não divulgada e não mostra totais de candidatos |
-| `and` | Distingue não iniciada, parcial e finalizada; não declara candidato eleito |
-| `dg`, `hg`, `idg` | Geração e identificador do arquivo |
-| `dt`, `ht` | Totalização; campos vazios antes do início viram `null` |
+| Campo                                          | Tratamento                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `ele`, `t`, `f`, `cdabr`, `tpabr`, `carg[].cd` | Validação de eleição, turno, ambiente, abrangência e cargo presidencial              |
+| `sqcand`, `n`, `nmu`                           | Identidade, número e nome de urna; catálogo consistente entre arquivos               |
+| `vap`, `pvapn`                                 | Votos computados e percentual informado pelo TSE, preservando o denominador da fonte |
+| `dvt`, `st`                                    | Destinação e situação; destinação ausente permanece ausente                          |
+| `s.ts`, `s.st`                                 | Seções totais e totalizadas; o indicador não usa `s.sa`                              |
+| `dv`                                           | Com `n`, a interface informa votação não divulgada e não mostra totais de candidatos |
+| `and`                                          | Distingue não iniciada, parcial e finalizada; não declara candidato eleito           |
+| `dg`, `hg`, `idg`                              | Geração e identificador do arquivo                                                   |
+| `dt`, `ht`                                     | Totalização; campos vazios antes do início viram `null`                              |
 
 O agregado nacional vem de BR, incluindo exterior. O mapa usa votos computados
 e não infere eleição de candidato. Arquivos de UFs podem ter gerações diferentes.

@@ -1,6 +1,8 @@
 # Eleições 2026 — apuração presidencial
 
-Aplicação React + TypeScript + Vite baseada no frame do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é apenas **Presidente da República**. A fonte padrão é o **simulado oficial do TSE**, com candidatos fictícios; os resultados não são a apuração real das Eleições 2026.
+Aplicação React + TypeScript + Vite baseada no frame do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é apenas **Presidente da República, primeiro turno**. A fonte padrão é o ambiente **oficial do TSE**, com coleta centralizada e histórico persistido no Supabase.
+
+Publicação: **[eleicoes.dadosabertos.org](https://eleicoes.dadosabertos.org)**, no Cloudflare Pages.
 
 ## Executar
 
@@ -8,6 +10,8 @@ Use Node.js 22.12+ ou 24+ e npm:
 
 ```sh
 npm ci
+# Copie .env.example para .env.local e configure o Supabase.
+# Para desenvolvimento sem rede, use VITE_ELECTION_DATA_SOURCE=mock.
 npm run dev
 ```
 
@@ -19,6 +23,8 @@ npm run preview     # servir o build localmente
 npm start           # servidor Node com frontend de dist/ e API (após build)
 npm run check       # lint, testes de dados e build
 npm run test:tse    # consultar os 28 arquivos presidenciais do simulado TSE
+npm run test:tse:official # consultar BR + 27 UFs no ambiente oficial
+npm run pages:build # frontend e Pages Function
 npx playwright install chromium --only-shell
 npm run test:e2e    # interações e acessibilidade em desktop/celular
 ```
@@ -43,6 +49,8 @@ src/domain/      contrato validado, cálculos e formatação
 src/services/    seleção da fonte e cliente do proxy TSE
 src/hooks/       carregamento, cancelamento, atualização e erros
 server/          API, download/cache compartilhado e adaptador EA20 do TSE
+functions/       Pages Function que consulta o snapshot público do Supabase
+supabase/        migrations, coletor autenticado e agendamento
 public/design/   SVGs originais do Figma
 tests/           testes de navegador e acessibilidade
 docs/            referência visual e integração de produção
@@ -52,8 +60,8 @@ O CSS é próprio, sem Tailwind, com os tokens da referência visual. As fontes 
 
 ## Conectar o TSE
 
-O simulado já funciona por `GET /api/tse/presidential`, servido pelo próprio projeto. Não é necessário criar um `.env` para usá-lo. O servidor mantém cache em memória por 30 segundos, limita downloads simultâneos e valida BR + 27 UFs antes de publicar. A interface identifica o ambiente e mostra a data do arquivo, sem apresentá-lo como apuração ao vivo.
+`GET /api/tse/presidential` lê o último snapshot oficial completo no Supabase. O coletor executa a cada minuto, valida BR + 27 UFs e grava atomicamente os arquivos originais e o resultado normalizado. A interface consulta a cada 30 segundos, identifica a fonte, mostra a data do TSE e sinaliza coletas desatualizadas. Sem divulgação ou antes do início da totalização, não apresenta um líder artificial.
 
-Consulte [docs/tse-integration.md](docs/tse-integration.md) para endpoints, interpretação EA20, tratamento de erros e futura conexão de produção. Não há gravação em banco ainda; a proposta para guardar o histórico está em [docs/persistence-plan.md](docs/persistence-plan.md).
+Consulte [docs/tse-integration.md](docs/tse-integration.md) para os endpoints e a interpretação EA20, [docs/supabase.md](docs/supabase.md) para persistência e coleta e [docs/cloudflare.md](docs/cloudflare.md) para publicação e domínio.
 
 O `.env.example` documenta a seleção de fonte. Consulte [docs/design.md](docs/design.md) para a origem dos assets e as adaptações do frame.

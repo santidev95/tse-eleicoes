@@ -27,7 +27,9 @@ export function BrazilMap({
   const compact = useCompactViewport()
   const results = new Map(data.states.map((state) => [state.uf, state]))
   // DF is drawn last so its small marker stays visible over neighboring shapes.
-  const displayGeometry = [...mapGeometry].sort((a, b) => Number(a.uf === 'DF') - Number(b.uf === 'DF'))
+  const displayGeometry = [...mapGeometry].sort(
+    (a, b) => Number(a.uf === 'DF') - Number(b.uf === 'DF'),
+  )
   return (
     <svg
       className="brazil-map"
