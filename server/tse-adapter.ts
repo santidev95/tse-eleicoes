@@ -9,11 +9,17 @@ export const SIMULATION = {
   cycle: 'ele2026',
   electionCode: '21270',
   round: 1,
+  environment: 'simulado2026', phase: 's', source: 'tse-sim',
 } as const
-export const resultUrl = (scope: string) => {
+export const OFFICIAL = {
+  baseUrl: 'https://resultados.tse.jus.br/oficial', cycle: 'ele2026', electionCode: '6257', round: 1,
+  environment: 'oficial', phase: 'o', source: 'tse',
+} as const
+export type TseConfig = typeof SIMULATION | typeof OFFICIAL
+export const resultUrl = (scope: string, config: TseConfig = SIMULATION) => {
   if (scope !== 'br' && !states.some((state) => state.uf.toLowerCase() === scope))
     throw new Error('Abrangência inválida.')
-  return `${SIMULATION.baseUrl}/${SIMULATION.cycle}/${SIMULATION.electionCode}/dados/${scope}/${scope}-c0001-e021270-u.json`
+  return `${config.baseUrl}/${config.cycle}/${config.electionCode}/dados/${scope}/${scope}-c0001-e${config.electionCode.padStart(6, '0')}-u.json`
 }
 
 const integer = z
@@ -33,13 +39,15 @@ const candidateSchema = z.object({
   nmu: z.string().min(1),
   vap: integer,
   pvapn: decimal,
-  dvt: z.string().min(1),
+  dvt: z.string().optional(),
   st: z.string(),
 })
 const ea20Schema = z.object({
-  ele: z.literal(SIMULATION.electionCode),
+  ele: z.string(),
   t: z.literal('1'),
-  f: z.literal('s'),
+  f: z.enum(['s', 'o']),
+  dv: z.enum(['s', 'n']),
+  and: z.enum(['n', 'p', 'f']),
   cdabr: z.string(),
   tpabr: z.enum(['br', 'uf']),
   dg: z.string(),
@@ -85,8 +93,10 @@ export function tseTimestamp(date: string, time: string) {
   return timestamp.toISOString()
 }
 
-export function decodeEa20(raw: unknown, scope: string) {
+export function decodeEa20(raw: unknown, scope: string, config: TseConfig = SIMULATION) {
   const file = ea20Schema.parse(raw)
+  if (file.ele !== config.electionCode || file.f !== config.phase)
+    throw new Error('Eleição ou ambiente TSE não corresponde à configuração.')
   if (file.cdabr !== scope || file.tpabr !== (scope === 'br' ? 'br' : 'uf'))
     throw new Error('Abrangência do arquivo TSE não corresponde à solicitação.')
   const offices = file.carg.filter((office) => office.cd === '1')
@@ -98,10 +108,12 @@ export function decodeEa20(raw: unknown, scope: string) {
     sectionsTotal: file.s.ts,
     sectionsCounted: file.s.st,
     sectionMetric: 'totalized',
+    disclosureAllowed: file.dv === 's',
+    totalizationStatus: file.and === 'n' ? 'not-started' : file.and === 'p' ? 'partial' : 'completed',
     votes: candidates.map((c) => ({
       candidateId: c.sqcand,
-      count: c.vap,
-      percent: c.pvapn,
+      count: file.dv === 's' ? c.vap : 0,
+      percent: file.dv === 's' ? c.pvapn : 0,
       destination: c.dvt,
       status: c.st,
     })),
@@ -111,19 +123,20 @@ export function decodeEa20(raw: unknown, scope: string) {
     candidates,
     metadata: {
       scope: scope.toUpperCase(),
-      url: resultUrl(scope),
+      url: resultUrl(scope, config),
       generationId: file.idg,
       generatedAt: tseTimestamp(file.dg, file.hg),
-      totalizedAt: tseTimestamp(file.dt, file.ht),
+      totalizedAt: !file.dt && !file.ht ? null : tseTimestamp(file.dt, file.ht),
     },
   }
 }
 
-export function normalizeSimulation(
+export function normalizeTse(
   rawFiles: Map<string, unknown>,
   fetchedAt: string,
+  config: TseConfig,
 ): ElectionSnapshot {
-  const national = decodeEa20(rawFiles.get('br'), 'br')
+  const national = decodeEa20(rawFiles.get('br'), 'br', config)
   const candidates: Candidate[] = [...national.candidates]
     .sort((a, b) => Number(a.n) - Number(b.n))
     .map((c, i) => ({
@@ -131,12 +144,12 @@ export function normalizeSimulation(
       name: c.nmu,
       number: c.n,
       // Compact labels prevent the intentionally long names in the simulation breaking the layout.
-      shortName: `Cand. ${c.n}`,
+      shortName: config.phase === 's' ? `Cand. ${c.n}` : c.nmu,
       color: palette[i % palette.length],
     }))
   const files = [national.metadata]
   const regional = states.map((state) => {
-    const parsed = decodeEa20(rawFiles.get(state.uf.toLowerCase()), state.uf.toLowerCase())
+    const parsed = decodeEa20(rawFiles.get(state.uf.toLowerCase()), state.uf.toLowerCase(), config)
     const localIds = parsed.candidates.map((c) => c.sqcand)
     if (localIds.length !== candidates.length || candidates.some((c) => !localIds.includes(c.id)))
       throw new Error(`Candidatos divergentes em ${state.uf}.`)
@@ -148,16 +161,18 @@ export function normalizeSimulation(
     year: 2026,
     office: 'president',
     round: 1,
-    source: 'tse-sim',
+    source: config.source,
     updatedAt: national.metadata.generatedAt,
     candidates,
     national: national.result,
     states: regional,
     upstream: {
-      electionCode: SIMULATION.electionCode,
-      environment: 'simulado2026',
+      electionCode: config.electionCode,
+      environment: config.environment,
       fetchedAt,
       files,
     },
   })
 }
+export const normalizeSimulation = (files: Map<string, unknown>, fetchedAt: string) =>
+  normalizeTse(files, fetchedAt, SIMULATION)

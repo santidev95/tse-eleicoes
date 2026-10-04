@@ -5,6 +5,7 @@ import {
   formatMargin,
   formatPercent,
   resultOverview,
+  votingNotice,
 } from '../domain/election'
 import type { Candidate, StateResult } from '../domain/election'
 export interface HoverTarget {
@@ -35,7 +36,7 @@ export function StateTooltip({
         <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>{' '}
         {result.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}
       </p>
-      <div className="tooltip-candidates">
+      {noVotes ? <p className="tooltip-hint">{votingNotice(result) ?? 'Aguardando votos'}</p> : <div className="tooltip-candidates">
         {ranked.slice(0, 2).map((candidate) => (
           <div key={candidate.id}>
             <span title={candidate.name}>
@@ -45,16 +46,16 @@ export function StateTooltip({
             <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
           </div>
         ))}
-      </div>
-      {ranked[0]?.destination && ranked[0].destination !== 'Válido' && (
+      </div>}
+      {!noVotes && ranked[0]?.destination && ranked[0].destination !== 'Válido' && (
         <p className="tooltip-destination">{ranked[0].destination}</p>
       )}
-      <div className="tooltip-margin">
+      {!noVotes && <div className="tooltip-margin">
         <span>Diferença</span>
         <strong className="mono">
           {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
         </strong>
-      </div>
+      </div>}
       <p className="tooltip-hint">Clique para explorar o estado</p>
     </div>
   )

@@ -136,7 +136,8 @@ function App() {
         </span>
       </main>
       <footer>
-        {data?.source === 'tse-sim'
+        {!data ? 'Apuração presidencial · aguardando dados da fonte configurada'
+          : data.source === 'tse-sim'
           ? 'Simulado do TSE · candidatos fictícios · mais votos computados · não representa resultados oficiais'
           : data?.source === 'tse'
             ? 'Fonte: Tribunal Superior Eleitoral (TSE) · Apuração presidencial'

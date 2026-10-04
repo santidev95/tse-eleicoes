@@ -7,7 +7,7 @@ export interface ElectionService {
   pollInterval: number | null
 }
 export function createElectionService(
-  source = import.meta.env.VITE_ELECTION_DATA_SOURCE ?? 'tse-sim',
+  source = import.meta.env.VITE_ELECTION_DATA_SOURCE ?? 'tse',
 ): ElectionService {
   if (source === 'mock')
     return {
@@ -34,8 +34,7 @@ export function createElectionService(
       load: () => Promise.reject(new ElectionServiceError('Fonte de dados inválida.')),
     }
   const url =
-    import.meta.env.VITE_TSE_PROXY_URL ??
-    (source === 'tse-sim' ? '/api/tse/presidential' : undefined)
+    import.meta.env.VITE_TSE_PROXY_URL ?? '/api/tse/presidential'
   return {
     pollInterval: 30_000,
     load: (signal) => {

@@ -5,6 +5,7 @@ import {
   formatPercent,
   resultOverview,
   candidateLabel,
+  votingNotice,
 } from '../domain/election'
 import type { ElectionSnapshot } from '../domain/election'
 export function NationalSummary({ data }: { data: ElectionSnapshot }) {
@@ -25,7 +26,7 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
           <span style={{ width: `${countedPercent(data.national)}%` }} />
         </div>
       </div>
-      <div className="national-candidates">
+      {noVotes ? <p className="awaiting-votes">{votingNotice(data.national) ?? 'Aguardando votos'}</p> : <div className="national-candidates">
         {[first, second].filter(Boolean).map((candidate, index) => (
           <div className="summary-candidate-wrap" key={candidate.id}>
             {index === 1 && (
@@ -70,7 +71,7 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
             {noVotes ? 'Sem votos' : leader ? `+${formatMargin(margin)}` : 'Empate'}
           </strong>
         </div>
-      </div>
+      </div>}
       {data.source !== 'mock' && (
         <p className="sr-only">
           Mais votos computados. Percentuais e destinação conforme o TSE; não indica eleição do

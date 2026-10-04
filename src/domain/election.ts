@@ -14,6 +14,8 @@ export const resultSchema = z
     sectionsTotal: count,
     sectionsCounted: count,
     sectionMetric: z.enum(['counted', 'totalized']).optional(),
+    disclosureAllowed: z.boolean().optional(),
+    totalizationStatus: z.enum(['not-started', 'partial', 'completed']).optional(),
     votes: z.array(
       z.object({
         candidateId: z.string(),
@@ -37,6 +39,7 @@ export const snapshotSchema = z
     round: z.union([z.literal(1), z.literal(2)]),
     source: z.enum(['mock', 'tse', 'tse-sim']),
     updatedAt: z.iso.datetime(),
+    storage: z.object({ lastCheckedAt: z.iso.datetime(), stale: z.boolean() }).optional(),
     upstream: z
       .object({
         electionCode: z.string(),
@@ -49,7 +52,7 @@ export const snapshotSchema = z
               url: z.url(),
               generationId: z.string(),
               generatedAt: z.iso.datetime(),
-              totalizedAt: z.iso.datetime(),
+              totalizedAt: z.iso.datetime().nullable(),
             }),
           )
           .length(28),
@@ -83,20 +86,26 @@ export function countedPercent(result: ElectionResult) {
   return result.sectionsTotal === 0 ? 0 : (result.sectionsCounted / result.sectionsTotal) * 100
 }
 export function rankedResults(result: ElectionResult, candidates: Candidate[]) {
+  const hidden = result.disclosureAllowed === false || result.totalizationStatus === 'not-started'
   const total = result.votes.reduce((sum, vote) => sum + vote.count, 0)
   return candidates
     .map((candidate) => {
       const vote = result.votes.find((vote) => vote.candidateId === candidate.id)
-      const votes = vote?.count ?? 0
+      const votes = hidden ? 0 : vote?.count ?? 0
       return {
         ...candidate,
         votes,
-        percent: vote?.percent ?? (total === 0 ? 0 : (votes / total) * 100),
+        percent: hidden ? 0 : vote?.percent ?? (total === 0 ? 0 : (votes / total) * 100),
         destination: vote?.destination,
         status: vote?.status,
       }
     })
     .sort((a, b) => b.votes - a.votes || a.id.localeCompare(b.id))
+}
+export function votingNotice(result: ElectionResult) {
+  if (result.disclosureAllowed === false) return 'Votação ainda não divulgada pelo TSE'
+  if (result.totalizationStatus === 'not-started') return 'Aguardando início da apuração'
+  return null
 }
 export function resultOverview(result: ElectionResult, candidates: Candidate[]) {
   const ranked = rankedResults(result, candidates)

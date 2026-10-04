@@ -10,7 +10,7 @@ export function Header({
   stale: boolean
   onSearch: () => void
 }) {
-  const mock = !data || data.source === 'mock'
+  const mock = data?.source === 'mock'
   const simulation = data?.source === 'tse-sim'
   const time = data
     ? new Date(data.updatedAt).toLocaleTimeString('pt-BR', {
@@ -38,17 +38,17 @@ export function Header({
         </span>
         <span className="source-badge">
           <img src="/design/badge.svg" alt="" width="11.9167" height="11.375" />
-          {mock ? 'Dados simulados' : simulation ? 'Simulado TSE' : 'Fonte: TSE'}
+          {!data ? 'Aguardando dados' : mock ? 'Dados simulados' : simulation ? 'Simulado TSE' : 'Fonte: TSE'}
         </span>
       </div>
       <div className="header-actions">
         <span className={`live-badge ${stale ? 'is-stale' : ''}`}>
           <span className="dot" />
           <span className="mono">
-            {stale ? 'SEM ATUALIZAÇÃO' : mock ? 'DEMONSTRAÇÃO' : simulation ? 'SIMULADO' : 'TSE'}
+            {stale ? 'SEM ATUALIZAÇÃO' : !data ? 'CARREGANDO' : mock ? 'DEMONSTRAÇÃO' : simulation ? 'SIMULADO' : data.national.totalizationStatus === 'not-started' ? 'AGUARDANDO' : data.national.totalizationStatus === 'completed' ? 'TOTALIZADO' : 'TSE'}
           </span>
           <span
-            className={`updated-at ${simulation ? 'simulation-date' : ''}`}
+            className={`updated-at ${data && !mock ? 'simulation-date' : ''}`}
             title="Data de geração do arquivo nacional · horário de Brasília"
           >
             {loading ? 'Carregando…' : time ? `${date} · ${time} BRT` : 'Aguardando dados'}

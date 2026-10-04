@@ -6,6 +6,7 @@ import {
   formatNumber,
   formatPercent,
   resultOverview,
+  votingNotice,
 } from '../domain/election'
 import type { Candidate, StateResult } from '../domain/election'
 export function StateDetailsPanel({
@@ -46,7 +47,7 @@ export function StateDetailsPanel({
       </div>
       <p className="state-leader">
         {noVotes
-          ? 'Aguardando votos'
+          ? votingNotice(result) ?? 'Aguardando votos'
           : leader
             ? `${leader.name} · mais votos computados`
             : 'Empate entre os primeiros'}
@@ -58,7 +59,7 @@ export function StateDetailsPanel({
       <p className="sections-detail">
         {formatNumber(result.sectionsCounted)} de {formatNumber(result.sectionsTotal)} seções
       </p>
-      <ul className="panel-candidates">
+      {!noVotes && <ul className="panel-candidates">
         {ranked.slice(0, 3).map((candidate) => (
           <li key={candidate.id}>
             <span className="dot" style={{ background: candidate.color }} />
@@ -72,8 +73,8 @@ export function StateDetailsPanel({
             <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
           </li>
         ))}
-      </ul>
-      {ranked.length > 3 && (
+      </ul>}
+      {!noVotes && ranked.length > 3 && (
         <details className="other-candidates">
           <summary>Outros {ranked.length - 3} candidatos</summary>
           <ul className="panel-candidates">
@@ -93,12 +94,12 @@ export function StateDetailsPanel({
           </ul>
         </details>
       )}
-      <div className="panel-margin">
+      {!noVotes && <div className="panel-margin">
         <span>Diferença entre os primeiros</span>
         <strong className="mono">
           {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
         </strong>
-      </div>
+      </div>}
       <p className="panel-footnote">
         Presidente da República · {round}º turno
         {mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}

@@ -1,0 +1,6 @@
+project_id = "tse"
+
+[functions.tse-collect]
+# Authentication is enforced inside the handler using a token stored in Vault.
+verify_jwt = false
+entrypoint = "./functions/tse-collect/index.ts"

@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "start": "tsx server/index.ts",
     "test:tse": "tsx scripts/check-tse.ts",
+    "test:tse:official": "tsx scripts/check-official.ts",
     "test": "vitest run src server",
     "test:e2e": "playwright test",
     "check": "npm run lint && npm test && npm run build",

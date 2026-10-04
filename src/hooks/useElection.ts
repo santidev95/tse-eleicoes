@@ -21,7 +21,7 @@ export function useElection(service: ElectionService = defaultService) {
         const next = await service.load(controller.signal)
         if (active) {
           setData(next)
-          setError(null)
+          setError(next.storage?.stale ? 'A coleta do TSE está sem atualização recente.' : null)
         }
       } catch (err) {
         if (active && !(err instanceof DOMException && err.name === 'AbortError'))

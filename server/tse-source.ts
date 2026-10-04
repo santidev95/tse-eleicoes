@@ -1,14 +1,19 @@
 import { states } from '../src/data/states.ts'
 import type { ElectionSnapshot } from '../src/domain/election.ts'
-import { normalizeSimulation, resultUrl } from './tse-adapter.ts'
+import { normalizeTse, resultUrl, SIMULATION } from './tse-adapter.ts'
+import type { TseConfig } from './tse-adapter.ts'
 
-export class UpstreamError extends Error {}
+export class UpstreamError extends Error {
+  status: number
+  constructor(status: number) { super(`TSE indisponível (HTTP ${status}).`); this.status = status }
+}
 
 export function createTseSource({
   fetcher = fetch,
   now = Date.now,
   ttl = 30_000,
-}: { fetcher?: typeof fetch; now?: () => number; ttl?: number } = {}) {
+  config = SIMULATION,
+}: { fetcher?: typeof fetch; now?: () => number; ttl?: number; config?: TseConfig } = {}) {
   let cache: { value: ElectionSnapshot; expiresAt: number } | null = null
   let inFlight: Promise<ElectionSnapshot> | null = null
   let retryAfter = 0
@@ -33,7 +38,7 @@ export function createTseSource({
             const headers: Record<string, string> = { Accept: 'application/json' }
             if (previous?.etag) headers['If-None-Match'] = previous.etag
             else if (previous?.modified) headers['If-Modified-Since'] = previous.modified
-            const response = await fetcher(resultUrl(scope), {
+            const response = await fetcher(resultUrl(scope, config), {
               headers,
               signal: AbortSignal.timeout(15_000),
             })
@@ -42,7 +47,7 @@ export function createTseSource({
               downloaded.set(scope, previous)
               continue
             }
-            if (!response.ok) throw new UpstreamError(`TSE indisponível (HTTP ${response.status}).`)
+            if (!response.ok) throw new UpstreamError(response.status)
             const raw = await response.json()
             rawFiles.set(scope, raw)
             downloaded.set(scope, {
@@ -57,11 +62,12 @@ export function createTseSource({
         }
       }),
     )
-    const snapshot = normalizeSimulation(rawFiles, new Date(now()).toISOString())
+    const snapshot = normalizeTse(rawFiles, new Date(now()).toISOString(), config)
     rawCache = downloaded
     return snapshot
   }
   return {
+    getRawFiles: () => [...rawCache].map(([scope, file]) => ({ scope, ...file })),
     async load(): Promise<ElectionSnapshot> {
       if (cache && cache.expiresAt > now()) return cache.value
       if (inFlight) return inFlight
@@ -74,7 +80,7 @@ export function createTseSource({
         })
         .catch((error) => {
           // Failed clients cannot hammer missing files. The UI retains its previous result.
-          retryAfter = now() + ttl
+          retryAfter = now() + (error instanceof UpstreamError && [403, 404, 429].includes(error.status) ? 600_000 : ttl)
           lastError = error
           throw error
         })
