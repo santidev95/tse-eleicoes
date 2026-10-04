@@ -6,12 +6,18 @@ import { normalizeSimulation } from '../server/tse-adapter'
 
 const br = JSON.parse(readFileSync('tests/fixtures/tse/br.json', 'utf8'))
 const mt = JSON.parse(readFileSync('tests/fixtures/tse/mt.json', 'utf8'))
-const snapshot = normalizeSimulation(new Map([
-  ['br', br], ...states.map(s => [s.uf.toLowerCase(), { ...mt, cdabr: s.uf.toLowerCase() }]),
-]), '2026-10-04T18:00:00.000Z')
+const snapshot = normalizeSimulation(
+  new Map([
+    ['br', br],
+    ...states.map((s) => [s.uf.toLowerCase(), { ...mt, cdabr: s.uf.toLowerCase() }]),
+  ]),
+  '2026-10-04T18:00:00.000Z',
+)
 
-test('official simulation labels, percentages, special names and compact candidate details', async ({ page }) => {
-  await page.route('**/api/tse/presidential', route => route.fulfill({ json: snapshot }))
+test('official simulation labels, percentages, special names and compact candidate details', async ({
+  page,
+}) => {
+  await page.route('**/api/tse/presidential', (route) => route.fulfill({ json: snapshot }))
   await page.goto('/')
   await expect(page.locator('[data-state]')).toHaveCount(27)
   await expect(page.locator('.source-badge')).toHaveText('Simulado TSE')
@@ -27,6 +33,8 @@ test('official simulation labels, percentages, special names and compact candida
   await expect(page.locator('.state-panel > .panel-candidates > li')).toHaveCount(3)
   await page.locator('.other-candidates summary').click()
   await expect(page.locator('.state-panel .panel-candidates > li')).toHaveCount(13)
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  )
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 })

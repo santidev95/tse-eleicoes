@@ -33,8 +33,7 @@ export function createElectionService(
       pollInterval: null,
       load: () => Promise.reject(new ElectionServiceError('Fonte de dados inválida.')),
     }
-  const url =
-    import.meta.env.VITE_TSE_PROXY_URL ?? '/api/tse/presidential'
+  const url = import.meta.env.VITE_TSE_PROXY_URL ?? '/api/tse/presidential'
   return {
     pollInterval: 30_000,
     load: (signal) => {

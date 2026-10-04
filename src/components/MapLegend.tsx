@@ -51,7 +51,7 @@ export function MapLegend({ data, mode }: { data: ElectionSnapshot; mode: MapMod
             {neutral > 0 && (
               <span>
                 <i className="dot" style={{ background: '#526071' }} />
-                Empate / sem votos: {neutral}
+                Sem liderança: {neutral} UFs
               </span>
             )}
           </div>

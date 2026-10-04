@@ -12,19 +12,34 @@ export function createPresidentialApi(env: Record<string, string | undefined> = 
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.setHeader('Cache-Control', 'no-store')
     if (req.method !== 'GET') {
-      res.setHeader('Allow', 'GET'); res.statusCode = 405
-      res.end(JSON.stringify({ error: 'Método não permitido.' })); return
+      res.setHeader('Allow', 'GET')
+      res.statusCode = 405
+      res.end(JSON.stringify({ error: 'Método não permitido.' }))
+      return
     }
     try {
-      if (!['oficial', 'simulado2026'].includes(environment)) throw new Error('Ambiente TSE inválido.')
-      source ??= direct ? createTseSource({ config: environment === 'oficial' ? OFFICIAL : SIMULATION })
-        : createSupabaseReader(env.SUPABASE_URL ?? '', env.SUPABASE_PUBLISHABLE_KEY ?? '', environment)
+      if (!['oficial', 'simulado2026'].includes(environment))
+        throw new Error('Ambiente TSE inválido.')
+      source ??= direct
+        ? createTseSource({ config: environment === 'oficial' ? OFFICIAL : SIMULATION })
+        : createSupabaseReader(
+            env.SUPABASE_URL ?? '',
+            env.SUPABASE_PUBLISHABLE_KEY ?? '',
+            environment,
+          )
       res.end(JSON.stringify(await source.load()))
     } catch (error) {
-      console.error('Falha na apuração:', error instanceof Error ? error.message : 'Erro desconhecido')
+      console.error(
+        'Falha na apuração:',
+        error instanceof Error ? error.message : 'Erro desconhecido',
+      )
       res.statusCode = 503
       res.setHeader('Retry-After', '30')
-      res.end(JSON.stringify({ error: 'Não foi possível atualizar a apuração. Tente novamente em instantes.' }))
+      res.end(
+        JSON.stringify({
+          error: 'Não foi possível atualizar a apuração. Tente novamente em instantes.',
+        }),
+      )
     }
   }
 }

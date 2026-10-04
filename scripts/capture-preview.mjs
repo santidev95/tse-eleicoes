@@ -18,11 +18,18 @@ for (const mode of ['desktop', 'mobile']) {
   })
   await page.goto('http://127.0.0.1:5173')
   await page.locator('[data-state="BA"]').waitFor()
-  const data = await page.request.get('http://127.0.0.1:5173/api/tse/presidential').then(r => r.json())
-  if (data.source !== 'tse-sim' || data.states.length !== 27 || data.upstream.files.length !== 28)
-    throw new Error('The preview must use the real TSE simulation API.')
-  if (!(await page.locator('.source-badge').innerText()).includes('Simulado TSE'))
-    throw new Error('The preview must identify the simulation.')
+  const data = await page.request
+    .get('http://127.0.0.1:5173/api/tse/presidential')
+    .then((r) => r.json())
+  if (
+    data.source !== 'tse' ||
+    data.states.length !== 27 ||
+    data.upstream.files.length !== 28 ||
+    !data.storage
+  )
+    throw new Error('The preview must use the official data persisted in Supabase.')
+  if (!(await page.locator('.source-badge').innerText()).includes('Fonte: TSE'))
+    throw new Error('The preview must identify the official source.')
   await page.evaluate(() => document.fonts.ready)
   await page.waitForLoadState('networkidle')
   await page.mouse.move(0, 0)

@@ -5,7 +5,10 @@ import type { TseConfig } from './tse-adapter.ts'
 
 export class UpstreamError extends Error {
   status: number
-  constructor(status: number) { super(`TSE indisponível (HTTP ${status}).`); this.status = status }
+  constructor(status: number) {
+    super(`TSE indisponível (HTTP ${status}).`)
+    this.status = status
+  }
 }
 
 export function createTseSource({
@@ -80,7 +83,11 @@ export function createTseSource({
         })
         .catch((error) => {
           // Failed clients cannot hammer missing files. The UI retains its previous result.
-          retryAfter = now() + (error instanceof UpstreamError && [403, 404, 429].includes(error.status) ? 600_000 : ttl)
+          retryAfter =
+            now() +
+            (error instanceof UpstreamError && [403, 404, 429].includes(error.status)
+              ? 600_000
+              : ttl)
           lastError = error
           throw error
         })

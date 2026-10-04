@@ -36,26 +36,32 @@ export function StateTooltip({
         <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>{' '}
         {result.sectionMetric === 'totalized' ? 'totalizado' : 'apurado'}
       </p>
-      {noVotes ? <p className="tooltip-hint">{votingNotice(result) ?? 'Aguardando votos'}</p> : <div className="tooltip-candidates">
-        {ranked.slice(0, 2).map((candidate) => (
-          <div key={candidate.id}>
-            <span title={candidate.name}>
-              <i className="dot" style={{ background: candidate.color }} />
-              {candidateLabel(candidate)}
-            </span>
-            <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
-          </div>
-        ))}
-      </div>}
+      {noVotes ? (
+        <p className="tooltip-hint">{votingNotice(result) ?? 'Aguardando votos'}</p>
+      ) : (
+        <div className="tooltip-candidates">
+          {ranked.slice(0, 2).map((candidate) => (
+            <div key={candidate.id}>
+              <span title={candidate.name}>
+                <i className="dot" style={{ background: candidate.color }} />
+                {candidateLabel(candidate)}
+              </span>
+              <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
+            </div>
+          ))}
+        </div>
+      )}
       {!noVotes && ranked[0]?.destination && ranked[0].destination !== 'Válido' && (
         <p className="tooltip-destination">{ranked[0].destination}</p>
       )}
-      {!noVotes && <div className="tooltip-margin">
-        <span>Diferença</span>
-        <strong className="mono">
-          {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
-        </strong>
-      </div>}
+      {!noVotes && (
+        <div className="tooltip-margin">
+          <span>Diferença</span>
+          <strong className="mono">
+            {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
+          </strong>
+        </div>
+      )}
       <p className="tooltip-hint">Clique para explorar o estado</p>
     </div>
   )

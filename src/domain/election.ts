@@ -91,11 +91,11 @@ export function rankedResults(result: ElectionResult, candidates: Candidate[]) {
   return candidates
     .map((candidate) => {
       const vote = result.votes.find((vote) => vote.candidateId === candidate.id)
-      const votes = hidden ? 0 : vote?.count ?? 0
+      const votes = hidden ? 0 : (vote?.count ?? 0)
       return {
         ...candidate,
         votes,
-        percent: hidden ? 0 : vote?.percent ?? (total === 0 ? 0 : (votes / total) * 100),
+        percent: hidden ? 0 : (vote?.percent ?? (total === 0 ? 0 : (votes / total) * 100)),
         destination: vote?.destination,
         status: vote?.status,
       }

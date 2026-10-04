@@ -26,6 +26,8 @@ export function BrazilMap({
   const prefix = useId().replaceAll(':', '')
   const compact = useCompactViewport()
   const results = new Map(data.states.map((state) => [state.uf, state]))
+  // DF is drawn last so its small marker stays visible over neighboring shapes.
+  const displayGeometry = [...mapGeometry].sort((a, b) => Number(a.uf === 'DF') - Number(b.uf === 'DF'))
   return (
     <svg
       className="brazil-map"
@@ -61,7 +63,7 @@ export function BrazilMap({
             >
               <feFlood floodColor={color} result="color" className="state-color" />
               <feComposite in="color" in2="SourceAlpha" operator="in" result="paint" />
-              {(selected === geometry.uf || hovered === geometry.uf) && (
+              {(geometry.uf === 'DF' || selected === geometry.uf || hovered === geometry.uf) && (
                 <>
                   <feMorphology in="SourceAlpha" operator="dilate" radius="1.5" result="outline" />
                   <feFlood floodColor="#ffffff" floodOpacity="0.9" result="white" />
@@ -69,7 +71,7 @@ export function BrazilMap({
                 </>
               )}
               <feMerge>
-                {(selected === geometry.uf || hovered === geometry.uf) && (
+                {(geometry.uf === 'DF' || selected === geometry.uf || hovered === geometry.uf) && (
                   <feMergeNode in="border" />
                 )}
                 <feMergeNode in={preserveOriginal ? 'SourceGraphic' : 'paint'} />
@@ -78,7 +80,7 @@ export function BrazilMap({
           )
         })}
       </defs>
-      {mapGeometry.map((geometry) => {
+      {displayGeometry.map((geometry) => {
         const result = results.get(geometry.uf)!,
           state = stateByUf[geometry.uf],
           original = dimensions[geometry.uf]

@@ -9,11 +9,18 @@ export const SIMULATION = {
   cycle: 'ele2026',
   electionCode: '21270',
   round: 1,
-  environment: 'simulado2026', phase: 's', source: 'tse-sim',
+  environment: 'simulado2026',
+  phase: 's',
+  source: 'tse-sim',
 } as const
 export const OFFICIAL = {
-  baseUrl: 'https://resultados.tse.jus.br/oficial', cycle: 'ele2026', electionCode: '6257', round: 1,
-  environment: 'oficial', phase: 'o', source: 'tse',
+  baseUrl: 'https://resultados.tse.jus.br/oficial',
+  cycle: 'ele2026',
+  electionCode: '6257',
+  round: 1,
+  environment: 'oficial',
+  phase: 'o',
+  source: 'tse',
 } as const
 export type TseConfig = typeof SIMULATION | typeof OFFICIAL
 export const resultUrl = (scope: string, config: TseConfig = SIMULATION) => {
@@ -109,7 +116,8 @@ export function decodeEa20(raw: unknown, scope: string, config: TseConfig = SIMU
     sectionsCounted: file.s.st,
     sectionMetric: 'totalized',
     disclosureAllowed: file.dv === 's',
-    totalizationStatus: file.and === 'n' ? 'not-started' : file.and === 'p' ? 'partial' : 'completed',
+    totalizationStatus:
+      file.and === 'n' ? 'not-started' : file.and === 'p' ? 'partial' : 'completed',
     votes: candidates.map((c) => ({
       candidateId: c.sqcand,
       count: file.dv === 's' ? c.vap : 0,

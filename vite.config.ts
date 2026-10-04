@@ -9,10 +9,14 @@ export default defineConfig(({ mode }) => ({
     {
       name: 'tse-presidential-api',
       configureServer(server) {
-        server.middlewares.use(createPresidentialApi({ ...loadEnv(mode, process.cwd(), ''), ...process.env }))
+        server.middlewares.use(
+          createPresidentialApi({ ...loadEnv(mode, process.cwd(), ''), ...process.env }),
+        )
       },
       configurePreviewServer(server) {
-        server.middlewares.use(createPresidentialApi({ ...loadEnv(mode, process.cwd(), ''), ...process.env }))
+        server.middlewares.use(
+          createPresidentialApi({ ...loadEnv(mode, process.cwd(), ''), ...process.env }),
+        )
       },
     },
   ],

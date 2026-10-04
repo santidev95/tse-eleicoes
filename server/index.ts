@@ -3,7 +3,9 @@ import { readFile, stat } from 'node:fs/promises'
 import { resolve, sep, extname } from 'node:path'
 import { createPresidentialApi } from './api.ts'
 
-try { process.loadEnvFile('.env.local') } catch (error) {
+try {
+  process.loadEnvFile('.env.local')
+} catch (error) {
   if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
 }
 const presidentialApi = createPresidentialApi()
@@ -57,5 +59,7 @@ const server = createServer((req, res) => {
 })
 const port = Number(process.env.PORT ?? 3000)
 server.listen(port, process.env.HOST ?? '127.0.0.1', () => {
-  console.log(`Apuração presidencial · ${process.env.TSE_ENVIRONMENT ?? 'oficial'} · http://127.0.0.1:${port}`)
+  console.log(
+    `Apuração presidencial · ${process.env.TSE_ENVIRONMENT ?? 'oficial'} · http://127.0.0.1:${port}`,
+  )
 })

@@ -29,3 +29,4 @@ artifacts
 *.sln
 *.sw?
 .npm-cache/
+supabase/.temp/

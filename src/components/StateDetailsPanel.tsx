@@ -47,7 +47,7 @@ export function StateDetailsPanel({
       </div>
       <p className="state-leader">
         {noVotes
-          ? votingNotice(result) ?? 'Aguardando votos'
+          ? (votingNotice(result) ?? 'Aguardando votos')
           : leader
             ? `${leader.name} · mais votos computados`
             : 'Empate entre os primeiros'}
@@ -59,21 +59,23 @@ export function StateDetailsPanel({
       <p className="sections-detail">
         {formatNumber(result.sectionsCounted)} de {formatNumber(result.sectionsTotal)} seções
       </p>
-      {!noVotes && <ul className="panel-candidates">
-        {ranked.slice(0, 3).map((candidate) => (
-          <li key={candidate.id}>
-            <span className="dot" style={{ background: candidate.color }} />
-            <div>
-              <span>{candidate.name}</span>
-              <small>{formatNumber(candidate.votes)} votos</small>
-              {candidate.destination && candidate.destination !== 'Válido' && (
-                <small className="vote-destination">{candidate.destination}</small>
-              )}
-            </div>
-            <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
-          </li>
-        ))}
-      </ul>}
+      {!noVotes && (
+        <ul className="panel-candidates">
+          {ranked.slice(0, 3).map((candidate) => (
+            <li key={candidate.id}>
+              <span className="dot" style={{ background: candidate.color }} />
+              <div>
+                <span>{candidate.name}</span>
+                <small>{formatNumber(candidate.votes)} votos</small>
+                {candidate.destination && candidate.destination !== 'Válido' && (
+                  <small className="vote-destination">{candidate.destination}</small>
+                )}
+              </div>
+              <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
+            </li>
+          ))}
+        </ul>
+      )}
       {!noVotes && ranked.length > 3 && (
         <details className="other-candidates">
           <summary>Outros {ranked.length - 3} candidatos</summary>
@@ -94,12 +96,14 @@ export function StateDetailsPanel({
           </ul>
         </details>
       )}
-      {!noVotes && <div className="panel-margin">
-        <span>Diferença entre os primeiros</span>
-        <strong className="mono">
-          {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
-        </strong>
-      </div>}
+      {!noVotes && (
+        <div className="panel-margin">
+          <span>Diferença entre os primeiros</span>
+          <strong className="mono">
+            {noVotes ? 'Sem votos' : leader ? formatMargin(margin) : 'Empate'}
+          </strong>
+        </div>
+      )}
       <p className="panel-footnote">
         Presidente da República · {round}º turno
         {mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}

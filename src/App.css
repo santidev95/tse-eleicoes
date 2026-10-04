@@ -188,7 +188,11 @@ main:focus {
 .national-candidates {
   gap: 20px;
 }
-.awaiting-votes { color: var(--muted); font-size: 12px; text-align: center; }
+.awaiting-votes {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
 .candidate-dot {
   box-shadow: 0 0 6px currentColor;
 }
