@@ -64,7 +64,7 @@ export function StateDetailsPanel({
       </p>
       {!noVotes && (
         <ul className="panel-candidates">
-          {ranked.slice(0, 3).map((candidate) => (
+          {ranked.slice(0, 4).map((candidate) => (
             <li key={candidate.id}>
               <span className="dot" style={{ background: candidate.color }} />
               <div>
@@ -80,11 +80,11 @@ export function StateDetailsPanel({
           ))}
         </ul>
       )}
-      {!noVotes && ranked.length > 3 && (
+      {!noVotes && ranked.length > 4 && (
         <details className="other-candidates">
-          <summary>Outros {ranked.length - 3} candidatos</summary>
+          <summary>Outros {ranked.length - 4} candidatos</summary>
           <ul className="panel-candidates">
-            {ranked.slice(3).map((candidate) => (
+            {ranked.slice(4).map((candidate) => (
               <li key={candidate.id}>
                 <span className="dot" style={{ background: candidate.color }} />
                 <div>

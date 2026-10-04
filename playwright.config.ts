@@ -7,12 +7,12 @@ export default defineConfig({
   projects: [
     {
       name: 'official-desktop',
-      testMatch: 'tse-official.spec.ts',
+      testMatch: ['tse-official.spec.ts', 'governors.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:5176' },
     },
     {
       name: 'official-mobile',
-      testMatch: 'tse-official.spec.ts',
+      testMatch: ['tse-official.spec.ts', 'governors.spec.ts'],
       use: {
         ...devices['Pixel 7'],
         viewport: { width: 390, height: 844 },

@@ -30,7 +30,7 @@ test('official simulation labels, percentages, special names and compact candida
   await page.locator('[data-state="MT"]').click()
   await expect(page.locator('.state-panel')).toContainText('Anulado sub judice')
   await expect(page.locator('.state-panel')).toContainText('Candidato string 1234!@#$"TSE"')
-  await expect(page.locator('.state-panel > .panel-candidates > li')).toHaveCount(3)
+  await expect(page.locator('.state-panel > .panel-candidates > li')).toHaveCount(4)
   await page.locator('.other-candidates summary').click()
   await expect(page.locator('.state-panel .panel-candidates > li')).toHaveCount(13)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(

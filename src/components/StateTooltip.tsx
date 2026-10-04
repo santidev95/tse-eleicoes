@@ -1,4 +1,5 @@
 import { stateByUf } from '../data/states'
+import { useLayoutEffect, useRef, useState } from 'react'
 import {
   candidateLabel,
   countedPercent,
@@ -24,10 +25,13 @@ export function StateTooltip({
 }) {
   const state = stateByUf[result.uf]
   const { ranked, leader, noVotes, margin } = resultOverview(result, candidates)
-  const x = Math.max(12, Math.min(position.x + 18, window.innerWidth - 256))
-  const y = Math.max(12, Math.min(position.y + 16, window.innerHeight - 248))
+  const ref = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState(360)
+  useLayoutEffect(() => { setHeight(ref.current?.getBoundingClientRect().height ?? 360) }, [result, candidates])
+  const x = Math.max(12, Math.min(position.x + 18, window.innerWidth - 296))
+  const y = Math.max(12, Math.min(position.y + 16, window.innerHeight - height - 12))
   return (
-    <div className="state-tooltip" id="state-tooltip" role="tooltip" style={{ left: x, top: y }}>
+    <div ref={ref} className="state-tooltip" id="state-tooltip" role="tooltip" style={{ left: x, top: y }}>
       <div className="tooltip-heading">
         <strong>{state.name}</strong>
         <span>{state.uf}</span>
@@ -40,7 +44,7 @@ export function StateTooltip({
         <p className="tooltip-hint">{votingNotice(result) ?? 'Aguardando votos'}</p>
       ) : (
         <div className="tooltip-candidates">
-          {ranked.slice(0, 2).map((candidate) => (
+          {ranked.slice(0, 4).map((candidate) => (
             <div key={candidate.id}>
               <span title={candidate.name}>
                 <i className="dot" style={{ background: candidate.color }} />

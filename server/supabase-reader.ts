@@ -16,11 +16,11 @@ export function createSupabaseReader(
     async load(): Promise<ElectionSnapshot> {
       const query = new URLSearchParams({
         environment: `eq.${environment}`,
-        office: `eq.${office}`,
         select: 'snapshot,last_checked_at,last_error',
         limit: '1',
       })
-      const response = await fetcher(`${url}/rest/v1/tse_latest?${query}`, {
+      const table = office === 'governor' ? 'tse_governor_latest' : 'tse_latest'
+      const response = await fetcher(`${url}/rest/v1/${table}?${query}`, {
         headers: { apikey: key, Accept: 'application/json' },
         signal: AbortSignal.timeout(10_000),
       })

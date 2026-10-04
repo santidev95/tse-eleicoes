@@ -234,7 +234,12 @@ main:focus {
 }
 .national-candidates {
   gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
+.national-summary:not(.governor-summary) { flex-direction: column; gap: 10px; }
+.national-summary:not(.governor-summary) .national-candidates { width: 100%; }
+.national-summary .summary-candidate-wrap { min-width: 0; }
 .awaiting-votes {
   color: var(--muted);
   font-size: 12px;
@@ -823,6 +828,7 @@ footer {
 }
 @media (max-width: 720px) {
   .header {
+    flex-wrap: wrap;
     padding: 14px 16px;
     align-items: flex-start;
   }
@@ -897,6 +903,7 @@ footer {
     gap: 8px;
   }
   .map-stage {
+    backdrop-filter: none;
     border-radius: 18px;
     height: max(520px, calc(100svh - 268px));
     min-height: 520px;
@@ -955,6 +962,7 @@ footer {
     transform: none;
   }
   .state-panel {
+    z-index: 30;
     position: fixed;
     left: 12px;
     right: 12px;

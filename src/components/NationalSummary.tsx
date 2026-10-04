@@ -9,7 +9,7 @@ import {
 } from '../domain/election'
 import type { ElectionSnapshot } from '../domain/election'
 export function NationalSummary({ data }: { data: ElectionSnapshot }) {
-  const { first, second, leader, noVotes, margin } = resultOverview(data.national, data.candidates)
+  const { ranked, leader, noVotes, margin } = resultOverview(data.national, data.candidates)
   return (
     <section className="national-summary" aria-label="Resumo nacional da apuração presidencial">
       <div className="national-progress">
@@ -30,13 +30,8 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
         <p className="awaiting-votes">{votingNotice(data.national) ?? 'Aguardando votos'}</p>
       ) : (
         <div className="national-candidates">
-          {[first, second].filter(Boolean).map((candidate, index) => (
+          {ranked.slice(0, 4).map((candidate) => (
             <div className="summary-candidate-wrap" key={candidate.id}>
-              {index === 1 && (
-                <span className="versus mono" aria-hidden="true">
-                  vs
-                </span>
-              )}
               <div className="summary-candidate">
                 <span
                   className="dot candidate-dot"
@@ -59,7 +54,7 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
             </div>
           ))}
           <div className="national-margin">
-            <span>DIFERENÇA</span>
+            <span>DIFERENÇA 1º–2º</span>
             <strong
               className="mono"
               style={{

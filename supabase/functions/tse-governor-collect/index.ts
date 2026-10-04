@@ -1,5 +1,5 @@
 import { createTseSource, UpstreamError } from '../../../server/tse-source.ts'
-import { OFFICIAL, SIMULATION } from '../../../server/tse-adapter.ts'
+import { GOVERNORS } from '../../../server/tse-adapter.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
@@ -22,16 +22,14 @@ async function sha256(value: string) {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
-const sources = {
-  oficial: createTseSource({ config: OFFICIAL, ttl: 0 }),
-  simulado2026: createTseSource({ config: SIMULATION, ttl: 0 }),
-}
+const governorSource = createTseSource({ config: GOVERNORS, ttl: 0 })
 
 Deno.serve(async (request: Request) => {
   if (request.method !== 'POST')
     return Response.json({ error: 'Method not allowed' }, { status: 405 })
-  let environment: keyof typeof sources = 'oficial'
+  let environment = 'oficial'
   let lease: string | null = null
+  
   try {
     // Custom authentication: the opaque token lives in Vault; only its hash is in our table.
     // The publishable/anon key cannot authorize collection or writes.
@@ -39,12 +37,12 @@ Deno.serve(async (request: Request) => {
     if (!token || token.length > 256 || !(await rpc('tse_authorize_collector', { p_token: token })))
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     const body = await request.json()
-    if (body.environment !== 'oficial' && body.environment !== 'simulado2026')
+    if (body.environment !== 'oficial')
       return Response.json({ error: 'Invalid environment' }, { status: 400 })
     environment = body.environment
-    lease = await rpc('tse_claim_collection', { p_environment: environment })
+    lease = await rpc('tse_governor_claim_collection', { p_environment: environment })
     if (!lease) return Response.json({ status: 'skipped', reason: 'locked-or-cooling-down' })
-    const source = sources[environment]
+    const source = governorSource
     const snapshot = await source.load()
     const files = await Promise.all(
       source.getRawFiles().map(async (file) => {
@@ -62,9 +60,9 @@ Deno.serve(async (request: Request) => {
     )
     files.sort((a, b) => a.scope.localeCompare(b.scope))
     const hash = await sha256(JSON.stringify(files.map((file) => [file.scope, file.sha256])))
-    const id = await rpc('tse_store_collection', {
+    const id = await rpc('tse_governor_store_collection', {
       p_environment: environment,
-
+      
       p_lease: lease,
       p_files: files,
       p_snapshot: snapshot,
@@ -74,9 +72,9 @@ Deno.serve(async (request: Request) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Collection failed'
     if (lease) {
-      await rpc('tse_fail_collection', {
+      await rpc('tse_governor_fail_collection', {
         p_environment: environment,
-
+        
         p_lease: lease,
         p_error: message,
         p_retry_seconds:
