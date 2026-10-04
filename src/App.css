@@ -30,30 +30,102 @@
   color: var(--muted);
   background: transparent;
   font-size: 12px;
-  transition: background 160ms, color 160ms;
+  transition:
+    background 160ms,
+    color 160ms;
 }
-.office-selector button[aria-pressed='true'] { background: #ffffff24; color: white; font-weight: 600; }
-.governor-summary { flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 25px; background: #0d1117cc; }
-.governor-summary-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
-.outcome-elected { color: #34d399; }
-.outcome-runoff { color: #fbbf24; }
-.closest-races { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-left: 12px; border-left: 1px solid var(--border); font-size: 11px; color: var(--muted); }
-.closest-races > .mono { font-size: 10px; letter-spacing: .5px; }
-.closest-races button { background: transparent; border: 0; padding: 3px 0; color: #cbd5e1; font: inherit; font-family: var(--font-mono, 'JetBrains Mono', monospace); }
-.closest-races strong { color: #fcd34d; }
-.governor-legend { max-width: 384px; }
-.governor-legend .leader-legend { flex-wrap: wrap; gap: 6px 12px; }
-.state-outcome { color: #cbd5e1; font-size: 11px; margin-top: 8px; }
+.office-selector button[aria-pressed='true'] {
+  background: #ffffff24;
+  color: white;
+  font-weight: 600;
+}
+.governor-summary {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 25px;
+  background: #0d1117cc;
+}
+.governor-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+.outcome-elected {
+  color: #34d399;
+}
+.outcome-runoff {
+  color: #fbbf24;
+}
+.closest-races {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+}
+.closest-races > .mono {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.closest-races button {
+  background: transparent;
+  border: 0;
+  padding: 3px 0;
+  color: #cbd5e1;
+  font: inherit;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}
+.closest-races strong {
+  color: #fcd34d;
+}
+.governor-legend {
+  max-width: 384px;
+}
+.governor-legend .leader-legend {
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.state-outcome {
+  color: #cbd5e1;
+  font-size: 11px;
+  margin-top: 8px;
+}
 @media (min-width: 701px) and (max-width: 1200px) {
-  .header .header-subtitle { display: none; }
-  .header { gap: 10px; padding-left: 24px; padding-right: 24px; }
+  .header .header-subtitle {
+    display: none;
+  }
+  .header {
+    gap: 10px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 @media (max-width: 700px) {
-  .header .office-selector { order: 3; width: 100%; justify-content: center; }
-  .office-selector button { flex: 1; }
-  .governor-summary-row { gap: 8px; font-size: 11px; }
-  .closest-races { gap: 8px; }
-  .governor-legend { max-width: calc(100% - 24px); }
+  .header .office-selector {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .office-selector button {
+    flex: 1;
+  }
+  .governor-summary-row {
+    gap: 8px;
+    font-size: 11px;
+  }
+  .closest-races {
+    gap: 8px;
+  }
+  .governor-legend {
+    max-width: calc(100% - 24px);
+  }
 }
 .election-app::before {
   content: '';
@@ -237,9 +309,16 @@ main:focus {
   flex-wrap: wrap;
   justify-content: center;
 }
-.national-summary:not(.governor-summary) { flex-direction: column; gap: 10px; }
-.national-summary:not(.governor-summary) .national-candidates { width: 100%; }
-.national-summary .summary-candidate-wrap { min-width: 0; }
+.national-summary:not(.governor-summary) {
+  flex-direction: column;
+  gap: 10px;
+}
+.national-summary:not(.governor-summary) .national-candidates {
+  width: 100%;
+}
+.national-summary .summary-candidate-wrap {
+  min-width: 0;
+}
 .awaiting-votes {
   color: var(--muted);
   font-size: 12px;
@@ -453,7 +532,8 @@ main:focus {
 .state-tooltip {
   position: fixed;
   z-index: 20;
-  width: 244px;
+  width: 284px;
+  max-width: calc(100vw - 24px);
   padding: 16px;
   border: 1px solid #ffffff20;
   border-radius: 14px;

@@ -27,11 +27,19 @@ export function StateTooltip({
   const { ranked, leader, noVotes, margin } = resultOverview(result, candidates)
   const ref = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(360)
-  useLayoutEffect(() => { setHeight(ref.current?.getBoundingClientRect().height ?? 360) }, [result, candidates])
+  useLayoutEffect(() => {
+    setHeight(ref.current?.getBoundingClientRect().height ?? 360)
+  }, [result, candidates])
   const x = Math.max(12, Math.min(position.x + 18, window.innerWidth - 296))
   const y = Math.max(12, Math.min(position.y + 16, window.innerHeight - height - 12))
   return (
-    <div ref={ref} className="state-tooltip" id="state-tooltip" role="tooltip" style={{ left: x, top: y }}>
+    <div
+      ref={ref}
+      className="state-tooltip"
+      id="state-tooltip"
+      role="tooltip"
+      style={{ left: x, top: y }}
+    >
       <div className="tooltip-heading">
         <strong>{state.name}</strong>
         <span>{state.uf}</span>
@@ -48,7 +56,8 @@ export function StateTooltip({
             <div key={candidate.id}>
               <span title={candidate.name}>
                 <i className="dot" style={{ background: candidate.color }} />
-                {candidateLabel(candidate)}{candidate.party ? ` · ${candidate.party}` : ''}
+                {candidateLabel(candidate)}
+                {candidate.party ? ` · ${candidate.party}` : ''}
               </span>
               <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
             </div>

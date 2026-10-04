@@ -36,11 +36,36 @@ export function createMockSnapshot(office: Office = 'president'): ElectionSnapsh
   if (office === 'governor') {
     const base = createMockSnapshot()
     const parties = ['PSD', 'UNIÃO', 'PT', 'MDB', 'PL', 'REPUBLICANOS', 'PP', 'PSB']
-    const colors = ['#3b82f6', '#06b6d4', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#6366f1', '#ec4899']
-    return snapshotSchema.parse({ ...base, office,
-      candidates: base.states.flatMap((state,i) => base.candidates.map((c,j) => ({ ...c, id: `${state.uf}:${c.id}`, uf: state.uf, name:`Candidato ${state.uf} ${c.id.toUpperCase()}`, party:parties[(i+j)%parties.length], color:colors[(i+j)%colors.length] }))),
-      states: base.states.map((s,i) => ({ ...s, outcome:i < 8 ? 'elected' : i < 22 ? 'runoff' : 'counting', votes:s.votes.map(v => ({...v,candidateId:`${s.uf}:${v.candidateId}`})) })),
-      national: { ...base.national, votes:[] } })
+    const colors = [
+      '#3b82f6',
+      '#06b6d4',
+      '#ef4444',
+      '#f59e0b',
+      '#10b981',
+      '#8b5cf6',
+      '#6366f1',
+      '#ec4899',
+    ]
+    return snapshotSchema.parse({
+      ...base,
+      office,
+      candidates: base.states.flatMap((state, i) =>
+        base.candidates.map((c, j) => ({
+          ...c,
+          id: `${state.uf}:${c.id}`,
+          uf: state.uf,
+          name: `Candidato ${state.uf} ${c.id.toUpperCase()}`,
+          party: parties[(i + j) % parties.length],
+          color: colors[(i + j) % colors.length],
+        })),
+      ),
+      states: base.states.map((s, i) => ({
+        ...s,
+        outcome: i < 8 ? 'elected' : i < 22 ? 'runoff' : 'counting',
+        votes: s.votes.map((v) => ({ ...v, candidateId: `${s.uf}:${v.candidateId}` })),
+      })),
+      national: { ...base.national, votes: [] },
+    })
   }
   const candidates = [
     { id: 'a', name: 'Candidato A', number: '13', color: '#e11d48' },

@@ -29,7 +29,7 @@ Deno.serve(async (request: Request) => {
     return Response.json({ error: 'Method not allowed' }, { status: 405 })
   let environment = 'oficial'
   let lease: string | null = null
-  
+
   try {
     // Custom authentication: the opaque token lives in Vault; only its hash is in our table.
     // The publishable/anon key cannot authorize collection or writes.
@@ -62,7 +62,7 @@ Deno.serve(async (request: Request) => {
     const hash = await sha256(JSON.stringify(files.map((file) => [file.scope, file.sha256])))
     const id = await rpc('tse_governor_store_collection', {
       p_environment: environment,
-      
+
       p_lease: lease,
       p_files: files,
       p_snapshot: snapshot,
@@ -74,7 +74,7 @@ Deno.serve(async (request: Request) => {
     if (lease) {
       await rpc('tse_governor_fail_collection', {
         p_environment: environment,
-        
+
         p_lease: lease,
         p_error: message,
         p_retry_seconds:

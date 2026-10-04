@@ -26,6 +26,7 @@ test('official simulation labels, percentages, special names and compact candida
   await expect(page.locator('.national-summary')).toContainText('8,71%')
   await expect(page.locator('.national-summary')).toContainText('8,29%')
   await expect(page.locator('.national-summary')).toContainText('totalizado')
+  await expect(page.locator('.summary-candidate')).toHaveCount(4)
   await expect(page.locator('.state-panel')).toHaveCount(0)
   await page.locator('[data-state="MT"]').click()
   await expect(page.locator('.state-panel')).toContainText('Anulado sub judice')

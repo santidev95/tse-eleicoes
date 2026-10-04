@@ -1,6 +1,6 @@
 # Eleições 2026 — apuração presidencial
 
-Aplicação React + TypeScript + Vite baseada no frame do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é apenas **Presidente da República, primeiro turno**. A fonte padrão é o ambiente **oficial do TSE**, com coleta centralizada e histórico persistido no Supabase.
+Aplicação React + TypeScript + Vite baseada nos frames do Figma, com tema escuro, mapa geométrico grande do Brasil e informações sob interação. O escopo atual é **Presidente e Governadores, primeiro turno**. A fonte padrão é o ambiente **oficial do TSE**, com coleta centralizada e histórico persistido no Supabase.
 
 Publicação: **[eleicoes.dadosabertos.org](https://eleicoes.dadosabertos.org)**, no Cloudflare Pages.
 
@@ -37,7 +37,7 @@ npm run test:e2e    # interações e acessibilidade em desktop/celular
 - Painel inicialmente fechado; Escape ou o botão de fechar devolvem o foco ao estado.
 - Busca de UF com nomes sem depender de acentos; Ctrl/⌘K abre a busca.
 - Estados de carregamento e erro, retentativa e preservação do último snapshot nas falhas de atualização.
-- Sem gráficos, tabelas ou outros cargos. Transições sutis respeitam movimento reduzido.
+- Seletor Presidente / Governadores e quatro primeiros candidatos no resumo presidencial, tooltip e painel. Transições sutis respeitam movimento reduzido.
 
 ## Organização
 
@@ -65,3 +65,5 @@ O CSS é próprio, sem Tailwind, com os tokens da referência visual. As fontes 
 Consulte [docs/tse-integration.md](docs/tse-integration.md) para os endpoints e a interpretação EA20, [docs/supabase.md](docs/supabase.md) para persistência e coleta e [docs/cloudflare.md](docs/cloudflare.md) para publicação e domínio.
 
 O `.env.example` documenta a seleção de fonte. Consulte [docs/design.md](docs/design.md) para a origem dos assets e as adaptações do frame.
+
+Consulte [docs/governors.md](docs/governors.md) para os endpoints estaduais, cores por partido, critérios de resultado e persistência independente.

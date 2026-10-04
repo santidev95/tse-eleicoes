@@ -15,9 +15,14 @@ import type { UF } from './data/states'
 import type { MapMode, Office } from './domain/election'
 import type { HoverTarget } from './components/StateTooltip'
 import './App.css'
-const services = { president: createElectionService(), governor: createElectionService(undefined, 'governor') }
+const services = {
+  president: createElectionService(),
+  governor: createElectionService(undefined, 'governor'),
+}
 function App() {
-  const [office, setOffice] = useState<Office>(() => new URLSearchParams(location.search).get('cargo') === 'governador' ? 'governor' : 'president')
+  const [office, setOffice] = useState<Office>(() =>
+    new URLSearchParams(location.search).get('cargo') === 'governador' ? 'governor' : 'president',
+  )
   const changeOffice = (value: Office) => {
     const url = new URL(location.href)
     if (value === 'governor') url.searchParams.set('cargo', 'governador')
@@ -27,7 +32,13 @@ function App() {
   }
   return <ElectionView key={office} office={office} onOfficeChange={changeOffice} />
 }
-function ElectionView({ office, onOfficeChange }: { office: Office; onOfficeChange: (office: Office) => void }) {
+function ElectionView({
+  office,
+  onOfficeChange,
+}: {
+  office: Office
+  onOfficeChange: (office: Office) => void
+}) {
   const { data, error, loading, retry } = useElection(services[office])
   const [mode, setMode] = useState<MapMode>('leader')
   const [hover, setHover] = useState<HoverTarget | null>(null)
@@ -82,8 +93,15 @@ function ElectionView({ office, onOfficeChange }: { office: Office; onOfficeChan
         onSearch={() => setSearchOpen(true)}
       />
       <main id="main" tabIndex={-1}>
-        <h2 className="sr-only">{office === 'president' ? 'Presidente da República' : 'Governadores'} · Brasil · 2026</h2>
-        {data && (office === 'president' ? <NationalSummary data={data} /> : <GovernorSummary data={data} onSelect={setSelected} />)}
+        <h2 className="sr-only">
+          {office === 'president' ? 'Presidente da República' : 'Governadores'} · Brasil · 2026
+        </h2>
+        {data &&
+          (office === 'president' ? (
+            <NationalSummary data={data} />
+          ) : (
+            <GovernorSummary data={data} onSelect={setSelected} />
+          ))}
         {!data && loading && <div className="summary-skeleton" aria-hidden="true" />}
         {error && (
           <div className="error-notice" role="alert">
@@ -105,7 +123,14 @@ function ElectionView({ office, onOfficeChange }: { office: Office; onOfficeChan
             <>
               <MapModeTabs mode={mode} onChange={setMode} />
               <p className="interactive-tip">
-                <img src={office === 'governor' ? '/design/governors/pointer.svg' : '/design/pointer.svg'} alt="" width={office === 'governor' ? governorDimensions.pointer.width : 10.1062} height={office === 'governor' ? governorDimensions.pointer.height : 12.25} />
+                <img
+                  src={
+                    office === 'governor' ? '/design/governors/pointer.svg' : '/design/pointer.svg'
+                  }
+                  alt=""
+                  width={office === 'governor' ? governorDimensions.pointer.width : 10.1062}
+                  height={office === 'governor' ? governorDimensions.pointer.height : 12.25}
+                />
                 <span className="desktop-tip">Passe o mouse ou clique no estado para detalhes</span>
                 <span className="mobile-tip">Toque em um estado para explorar</span>
               </p>
@@ -134,11 +159,16 @@ function ElectionView({ office, onOfficeChange }: { office: Office; onOfficeChan
           ) : loading ? (
             <div className="loading-state" role="status">
               <span className="loading-spinner" />
-              <p>Carregando a apuração {office === 'president' ? 'presidencial' : 'dos governadores'}…</p>
+              <p>
+                Carregando a apuração {office === 'president' ? 'presidencial' : 'dos governadores'}
+                …
+              </p>
             </div>
           ) : (
             <div className="empty-state">
-              <span className="eyebrow">{office === 'president' ? 'APURAÇÃO PRESIDENCIAL' : 'GOVERNADORES'}</span>
+              <span className="eyebrow">
+                {office === 'president' ? 'APURAÇÃO PRESIDENCIAL' : 'GOVERNADORES'}
+              </span>
               <h3>Dados indisponíveis</h3>
               <p>Tente carregar a apuração novamente.</p>
             </div>

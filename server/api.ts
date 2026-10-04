@@ -22,16 +22,26 @@ export function createPresidentialApi(env: Record<string, string | undefined> = 
     try {
       if (!['oficial', 'simulado2026'].includes(environment))
         throw new Error('Ambiente TSE inválido.')
-      if (office === 'governor' && environment !== 'oficial') throw new Error('Governadores disponíveis no ambiente oficial.')
-      const source = sources.get(office) ?? (direct
-        ? createTseSource({ config: office === 'governor' ? GOVERNORS : environment === 'oficial' ? OFFICIAL : SIMULATION })
-        : createSupabaseReader(
-            env.SUPABASE_URL ?? '',
-            env.SUPABASE_PUBLISHABLE_KEY ?? '',
-            environment,
-            fetch,
-            office,
-          ))
+      if (office === 'governor' && environment !== 'oficial')
+        throw new Error('Governadores disponíveis no ambiente oficial.')
+      const source =
+        sources.get(office) ??
+        (direct
+          ? createTseSource({
+              config:
+                office === 'governor'
+                  ? GOVERNORS
+                  : environment === 'oficial'
+                    ? OFFICIAL
+                    : SIMULATION,
+            })
+          : createSupabaseReader(
+              env.SUPABASE_URL ?? '',
+              env.SUPABASE_PUBLISHABLE_KEY ?? '',
+              environment,
+              fetch,
+              office,
+            ))
       sources.set(office, source)
       res.end(JSON.stringify(await source.load()))
     } catch (error) {

@@ -58,7 +58,8 @@ export const snapshotSchema = z
               totalizedAt: z.iso.datetime().nullable(),
             }),
           )
-          .min(27).max(28),
+          .min(27)
+          .max(28),
       })
       .optional(),
     candidates: z.array(candidateSchema).min(2),
@@ -68,14 +69,24 @@ export const snapshotSchema = z
       .length(27),
   })
   .superRefine((snapshot, ctx) => {
-    if (snapshot.upstream && snapshot.upstream.files.length !== (snapshot.office === 'president' ? 28 : 27))
+    if (
+      snapshot.upstream &&
+      snapshot.upstream.files.length !== (snapshot.office === 'president' ? 28 : 27)
+    )
       ctx.addIssue({ code: 'custom', message: 'Quantidade de arquivos incorreta para o cargo.' })
     if (snapshot.office === 'governor') {
-      if (snapshot.national.votes.length || snapshot.candidates.some(c => !c.uf || !c.party))
-        ctx.addIssue({ code: 'custom', message: 'Governadores exigem candidatos estaduais e não têm votação nacional.' })
+      if (snapshot.national.votes.length || snapshot.candidates.some((c) => !c.uf || !c.party))
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Governadores exigem candidatos estaduais e não têm votação nacional.',
+        })
       for (const state of snapshot.states) {
-        const local = snapshot.candidates.filter(c => c.uf === state.uf)
-        if (local.length < 2 || state.votes.length !== local.length || state.votes.some(v => !local.some(c => c.id === v.candidateId)))
+        const local = snapshot.candidates.filter((c) => c.uf === state.uf)
+        if (
+          local.length < 2 ||
+          state.votes.length !== local.length ||
+          state.votes.some((v) => !local.some((c) => c.id === v.candidateId))
+        )
           ctx.addIssue({ code: 'custom', message: 'Candidatos não pertencem à disputa estadual.' })
       }
     }
@@ -104,7 +115,7 @@ export function rankedResults(result: ElectionResult, candidates: Candidate[]) {
   const hidden = result.disclosureAllowed === false || result.totalizationStatus === 'not-started'
   const total = result.votes.reduce((sum, vote) => sum + vote.count, 0)
   return candidates
-    .filter((candidate) => result.votes.some(vote => vote.candidateId === candidate.id))
+    .filter((candidate) => result.votes.some((vote) => vote.candidateId === candidate.id))
     .map((candidate) => {
       const vote = result.votes.find((vote) => vote.candidateId === candidate.id)
       const votes = hidden ? 0 : (vote?.count ?? 0)

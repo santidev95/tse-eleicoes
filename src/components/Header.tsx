@@ -39,10 +39,16 @@ export function Header({
           Eleições 2026
         </h1>
         <span className="header-subtitle">
-          Apuração {office === 'president' ? 'presidencial' : 'estadual'}{mock ? ' · demonstração' : simulation ? ' · simulado' : ''}
+          Apuração {office === 'president' ? 'presidencial' : 'estadual'}
+          {mock ? ' · demonstração' : simulation ? ' · simulado' : ''}
         </span>
         <span className="source-badge">
-          <img src={office === 'governor' ? '/design/governors/badge.svg' : '/design/badge.svg'} alt="" width="11.9167" height="11.375" />
+          <img
+            src={office === 'governor' ? '/design/governors/badge.svg' : '/design/badge.svg'}
+            alt=""
+            width="11.9167"
+            height="11.375"
+          />
           {!data
             ? 'Aguardando dados'
             : mock
@@ -73,7 +79,11 @@ export function Header({
           </span>
           <span
             className={`updated-at ${data && !mock ? 'simulation-date' : ''}`}
-            title={office === 'president' ? 'Data de geração do arquivo nacional · horário de Brasília' : 'Arquivo estadual mais recente · horário de Brasília; cada UF tem sua própria atualização'}
+            title={
+              office === 'president'
+                ? 'Data de geração do arquivo nacional · horário de Brasília'
+                : 'Arquivo estadual mais recente · horário de Brasília; cada UF tem sua própria atualização'
+            }
           >
             {loading ? 'Carregando…' : time ? `${date} · ${time} BRT` : 'Aguardando dados'}
           </span>
@@ -84,7 +94,12 @@ export function Header({
           aria-label="Buscar estado"
           disabled={!data}
         >
-          <img src={office === 'governor' ? '/design/governors/search.svg' : '/design/search.svg'} alt="" width="12" height="12" />
+          <img
+            src={office === 'governor' ? '/design/governors/search.svg' : '/design/search.svg'}
+            alt=""
+            width="12"
+            height="12"
+          />
           <span>Buscar UF</span>
           <kbd>⌘K</kbd>
         </button>

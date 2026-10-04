@@ -23,7 +23,10 @@ export function createTseSource({
   let lastError: unknown
   let rawCache = new Map<string, { raw: unknown; etag: string | null; modified: string | null }>()
   async function download() {
-    const scopes = [...(isGovernor(config) ? [] : ['br']), ...states.map((state) => state.uf.toLowerCase())]
+    const scopes = [
+      ...(isGovernor(config) ? [] : ['br']),
+      ...states.map((state) => state.uf.toLowerCase()),
+    ]
     const rawFiles = new Map<string, unknown>()
     const downloaded = new Map<
       string,

@@ -54,7 +54,17 @@ export function StateDetailsPanel({
             ? `${leader.name} · mais votos computados`
             : 'Empate entre os primeiros'}
       </p>
-      {office === 'governor' && <p className="state-outcome">{result.outcome === 'elected' ? 'Eleito no 1º turno · TSE' : result.outcome === 'runoff' ? 'Segundo turno definido · TSE' : result.outcome === 'unassigned' ? 'Sem atribuição de eleito · TSE' : 'Em apuração · resultado ainda não definido'}</p>}
+      {office === 'governor' && (
+        <p className="state-outcome">
+          {result.outcome === 'elected'
+            ? 'Eleito no 1º turno · TSE'
+            : result.outcome === 'runoff'
+              ? 'Segundo turno definido · TSE'
+              : result.outcome === 'unassigned'
+                ? 'Sem atribuição de eleito · TSE'
+                : 'Em apuração · resultado ainda não definido'}
+        </p>
+      )}
       <div className="panel-counted">
         <strong className="mono">{formatPercent(countedPercent(result), 1)}</strong>
         <span>das seções {result.sectionMetric === 'totalized' ? 'totalizadas' : 'apuradas'}</span>
@@ -68,7 +78,10 @@ export function StateDetailsPanel({
             <li key={candidate.id}>
               <span className="dot" style={{ background: candidate.color }} />
               <div>
-                <span>{candidate.name}{candidate.party ? ` · ${candidate.party}` : ''}</span>
+                <span>
+                  {candidate.name}
+                  {candidate.party ? ` · ${candidate.party}` : ''}
+                </span>
                 {candidate.status && <small>{candidate.status}</small>}
                 <small>{formatNumber(candidate.votes)} votos</small>
                 {candidate.destination && candidate.destination !== 'Válido' && (
@@ -88,7 +101,10 @@ export function StateDetailsPanel({
               <li key={candidate.id}>
                 <span className="dot" style={{ background: candidate.color }} />
                 <div>
-                  <span>{candidate.name}{candidate.party ? ` · ${candidate.party}` : ''}</span>
+                  <span>
+                    {candidate.name}
+                    {candidate.party ? ` · ${candidate.party}` : ''}
+                  </span>
                   {candidate.status && <small>{candidate.status}</small>}
                   <small>{formatNumber(candidate.votes)} votos</small>
                   {candidate.destination && candidate.destination !== 'Válido' && (

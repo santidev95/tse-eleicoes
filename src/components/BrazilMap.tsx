@@ -38,7 +38,11 @@ export function BrazilMap({
       role="group"
       aria-labelledby={`${prefix}-title ${prefix}-desc`}
     >
-      <title id={`${prefix}-title`}>{data.office === 'president' ? 'Apuração presidencial por estado' : 'Apuração de governadores por estado'}</title>
+      <title id={`${prefix}-title`}>
+        {data.office === 'president'
+          ? 'Apuração presidencial por estado'
+          : 'Apuração de governadores por estado'}
+      </title>
       <desc id={`${prefix}-desc`}>
         Mapa geométrico do Brasil. Use Tab para focar uma UF, Enter ou Espaço para abrir detalhes e
         Escape para fechar. Modo:{' '}
@@ -53,7 +57,8 @@ export function BrazilMap({
         {mapGeometry.map((geometry) => {
           const color = mapColor(results.get(geometry.uf)!, data.candidates, mode)
           const originalColor = designBlueStates.has(geometry.uf) ? '#2563eb' : '#e11d48'
-          const preserveOriginal = data.office === 'president' && mode === 'leader' && color === originalColor
+          const preserveOriginal =
+            data.office === 'president' && mode === 'leader' && color === originalColor
           return (
             <filter
               id={`${prefix}-${geometry.uf}`}
