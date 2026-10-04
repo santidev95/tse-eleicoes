@@ -4,6 +4,7 @@ import {
   formatNumber,
   formatPercent,
   resultOverview,
+  candidateLabel,
 } from '../domain/election'
 import type { ElectionSnapshot } from '../domain/election'
 export function NationalSummary({ data }: { data: ElectionSnapshot }) {
@@ -37,8 +38,9 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
                 className="dot candidate-dot"
                 style={{ background: candidate.color, color: candidate.color }}
               />
-              <span className="candidate-short">
-                Cand. {candidate.name.replace('Candidato ', '')} ({candidate.number})
+              <span className="candidate-short" title={`${candidate.name} (${candidate.number}) · ${candidate.destination ?? 'Votos computados'}`}>
+                {candidateLabel(candidate)}{!candidate.shortName && ` (${candidate.number})`}
+                {candidate.destination && candidate.destination !== 'Válido' && <span className="destination-mark" aria-label={candidate.destination}>*</span>}
               </span>
               <strong className="mono">{formatPercent(candidate.percent)}</strong>
             </div>
@@ -61,6 +63,7 @@ export function NationalSummary({ data }: { data: ElectionSnapshot }) {
           </strong>
         </div>
       </div>
+      {data.source !== 'mock' && <p className="sr-only">Mais votos computados. Percentuais e destinação conforme o TSE; não indica eleição do candidato.</p>}
     </section>
   )
 }

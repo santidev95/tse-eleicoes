@@ -1,5 +1,5 @@
 import { stateByUf } from '../data/states'
-import { countedPercent, formatMargin, formatPercent, resultOverview } from '../domain/election'
+import { candidateLabel, countedPercent, formatMargin, formatPercent, resultOverview } from '../domain/election'
 import type { Candidate, StateResult } from '../domain/election'
 export interface HoverTarget {
   uf: StateResult['uf']
@@ -31,14 +31,15 @@ export function StateTooltip({
       <div className="tooltip-candidates">
         {ranked.slice(0, 2).map((candidate) => (
           <div key={candidate.id}>
-            <span>
+            <span title={candidate.name}>
               <i className="dot" style={{ background: candidate.color }} />
-              {candidate.name}
+              {candidateLabel(candidate)}
             </span>
             <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
           </div>
         ))}
       </div>
+      {ranked[0]?.destination && ranked[0].destination !== 'Válido' && <p className="tooltip-destination">{ranked[0].destination}</p>}
       <div className="tooltip-margin">
         <span>Diferença</span>
         <strong className="mono">

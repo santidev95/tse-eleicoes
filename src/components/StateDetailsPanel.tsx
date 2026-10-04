@@ -48,7 +48,7 @@ export function StateDetailsPanel({
         {noVotes
           ? 'Aguardando votos'
           : leader
-            ? `${leader.name} lidera`
+            ? `${leader.name} · mais votos computados`
             : 'Empate entre os primeiros'}
       </p>
       <div className="panel-counted">
@@ -59,17 +59,27 @@ export function StateDetailsPanel({
         {formatNumber(result.sectionsCounted)} de {formatNumber(result.sectionsTotal)} seções
       </p>
       <ul className="panel-candidates">
-        {ranked.map((candidate) => (
+        {ranked.slice(0, 3).map((candidate) => (
           <li key={candidate.id}>
             <span className="dot" style={{ background: candidate.color }} />
             <div>
               <span>{candidate.name}</span>
               <small>{formatNumber(candidate.votes)} votos</small>
+              {candidate.destination && candidate.destination !== 'Válido' && <small className="vote-destination">{candidate.destination}</small>}
             </div>
             <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
           </li>
         ))}
       </ul>
+      {ranked.length > 3 && <details className="other-candidates">
+        <summary>Outros {ranked.length - 3} candidatos</summary>
+        <ul className="panel-candidates">{ranked.slice(3).map(candidate => <li key={candidate.id}>
+          <span className="dot" style={{ background: candidate.color }} />
+          <div><span>{candidate.name}</span><small>{formatNumber(candidate.votes)} votos</small>
+          {candidate.destination && candidate.destination !== 'Válido' && <small className="vote-destination">{candidate.destination}</small>}</div>
+          <strong className="mono">{formatPercent(candidate.percent, 1)}</strong>
+        </li>)}</ul>
+      </details>}
       <div className="panel-margin">
         <span>Diferença entre os primeiros</span>
         <strong className="mono">
@@ -77,7 +87,7 @@ export function StateDetailsPanel({
         </strong>
       </div>
       <p className="panel-footnote">
-        Presidente da República · {round}º turno{mock ? ' · simulação' : ''}
+        Presidente da República · {round}º turno{mock ? ' · simulação' : ' · percentuais e destinação conforme TSE'}
       </p>
     </aside>
   )

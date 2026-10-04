@@ -101,7 +101,7 @@ export function resultOverview(result: ElectionResult, candidates: Candidate[]) 
 export const formatPercent = (value: number, digits = 2) =>
   `${value.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`
 export const formatNumber = (value: number) => value.toLocaleString('pt-BR')
-export const candidateLabel = (candidate: Candidate) => candidate.shortName ?? candidate.name
+export const candidateLabel = (candidate: Candidate) => candidate.shortName ?? candidate.name.replace(/^Candidato /i, 'Cand. ')
 export const formatMargin = (value: number) =>
   `${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} p.p.`
 

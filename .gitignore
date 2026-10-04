@@ -28,3 +28,4 @@ artifacts
 *.njsproj
 *.sln
 *.sw?
+.npm-cache/

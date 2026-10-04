@@ -3,7 +3,7 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
   reporter: 'list',
-  use: { baseURL: 'http://127.0.0.1:5173', trace: 'retain-on-failure' },
+  use: { baseURL: 'http://127.0.0.1:5175', trace: 'retain-on-failure' },
   projects: [
     {
       name: 'desktop',
@@ -23,9 +23,10 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort',
-      url: 'http://127.0.0.1:5173',
+      command: 'npm run dev -- --host 127.0.0.1 --port 5175 --strictPort',
+      url: 'http://127.0.0.1:5175',
       reuseExistingServer: !process.env.CI,
+      env: { VITE_ELECTION_DATA_SOURCE: 'mock' },
     },
     {
       command: 'npm run dev -- --host 127.0.0.1 --port 5174 --strictPort',

@@ -131,12 +131,14 @@ function App() {
         )}
         <span className="sr-only" role="status">
           {data
-            ? `Apuração carregada. ${data.source === 'mock' ? 'Dados simulados.' : 'Fonte TSE.'}`
+            ? `Apuração carregada. ${data.source === 'mock' ? 'Dados simulados.' : data.source === 'tse-sim' ? 'Simulado do TSE.' : 'Fonte TSE.'}`
             : ''}
         </span>
       </main>
       <footer>
-        {data?.source === 'tse'
+        {data?.source === 'tse-sim'
+          ? 'Simulado do TSE · candidatos fictícios · mais votos computados · não representa resultados oficiais'
+          : data?.source === 'tse'
           ? 'Fonte: Tribunal Superior Eleitoral (TSE) · Apuração presidencial'
           : 'Demonstração visual · candidatos e resultados fictícios · sem conexão com a apuração oficial'}
       </footer>
